@@ -1,0 +1,26 @@
+language: python
+
+# validators produces a DeprecationWarning in python 3.5+
+# validators version 12.1 produces the warning.  PR #61 would likely resolve that.
+# once resolved, it would be a good idea to up the version above that
+python:
+  - '3.4'
+  - '3.5'
+  - '3.6'
+  # 3.7 fails due to mypy needing a definition for datetime.date.fromisoformat
+  - '3.7-dev'
+
+
+
+install:
+  - pip install -r requirements-dev.txt
+  - pip install .
+  
+script:
+  # test the static typing
+  - mypy scrape_schema_recipe/scrape.py
+  
+  - python test_scrape.py
+  # runs test and coverage
+  # - python3 -m nose2
+  # nose2 isn't working for some reason
