@@ -27,7 +27,7 @@ import requests
 from typing import Callable, Dict, IO, List, Optional, Union
 import validators
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 # Follow RFC 7231 sec. 5.5.3
 USER_AGENT_STR = 'scrape-schema-recipe/{} requests/{}'.format(
@@ -276,13 +276,17 @@ def _convert_to_scrapings(data: Dict[str, List[Dict]],
 
     if data['microdata'] != []:
         for rec in data['microdata']:
-            if rec['type'] == 'http://schema.org/Recipe':
+            if rec['type'] in ('http://schema.org/Recipe',
+                               'https://schema.org/Recipe'):
                 d = rec['properties'].copy()
                 if nonstandard_attrs is True:
                     d['_format'] = 'microdata'
                 # add @context and @type for conversion to the JSON-LD
                 # style format
-                d['@context'] = 'http://schema.org'
+                if rec['type'][:6] == 'https:':
+                    d['@context'] = 'https://schema.org'
+                else:
+                    d['@context'] = 'http://schema.org'
                 d['@type'] = 'Recipe'
 
                 # store the url
@@ -291,6 +295,12 @@ def _convert_to_scrapings(data: Dict[str, List[Dict]],
                         d['_source_url'] = url
                     else:
                         d['url'] = url
+
+                for key in d.keys():
+                    if isinstance(d[key], dict) and 'type' in d[key]:
+                        type_ = d[key].pop('type')
+                        d[key]['@type'] = type_.split('/')[3]
+
                 out.append(d)
 
     return out

@@ -4,8 +4,13 @@ Scrapes recipes from HTML https://schema.org/Recipe (Microdata/JSON-LD) into Pyt
 
 Python version 3.4+
 
-This library relies heavily upon extruct.
+This library relies heavily upon [extruct](https://github.com/scrapinghub/extruct).
 
+## Install
+
+```
+pip install scrape-schema-recipe
+```
 
 ## Online Example
 
