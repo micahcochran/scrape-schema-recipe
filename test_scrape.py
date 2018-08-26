@@ -45,10 +45,9 @@ class TestParsingFileMicroData(unittest.TestCase):
 
     def test_recipe_keys(self):
         input_keys = list(self.recipe.keys())
-        # Note: 'ingredients' has been superceeded by 'recipeIngredients' in
-        # the http://schema.org/Recipe standard for a list of ingredients.
+
         expectated_output = ['@context', 'recipeYield', '@type',
-                             'recipeInstructions', 'ingredients', 'name']
+                             'recipeInstructions', 'recipeIngredient', 'name']
 
         assert lists_are_equal(expectated_output, input_keys)
 
@@ -75,7 +74,7 @@ class TestParsingFileMicroData2(unittest.TestCase):
 
         expectated_output = ['prepTime', 'cookTime', 'name', 'recipeYield',
                              'recipeCategory', 'image', 'description', '@type',
-                             'author', 'aggregateRating', 'ingredients',
+                             'author', 'aggregateRating', 'recipeIngredient',
                              'recipeInstructions', 'totalTime', '@context']
 
         assert lists_are_equal(expectated_output, input_keys)
@@ -222,6 +221,42 @@ class TestURL(unittest.TestCase):
         self.recipe = self.recipes[0]
         assert self.recipe['name'] == 'Irish Coffee'
 
+
+# test that the schema still works unmigrated
+class TestUnMigratedSchema(unittest.TestCase):
+
+# Some of these examples use 'ingredients', which was superceeded by
+# 'recipeIngredients' in the http://schema.org/Recipe standard for a list 
+# of ingredients in a recipe.
+
+    def test_recipe1(self):
+        recipes = load('test_data/foodista-british-treacle-tart.html', 
+                       migrate_old_schema=False)
+        recipe = recipes[0]
+
+        input_keys = list(recipe.keys())
+        # Note: 'ingredients' has been superceeded by 'recipeIngredients' in
+        # the http://schema.org/Recipe standard for a list of ingredients.
+        expectated_output = ['@context', 'recipeYield', '@type',
+                             'recipeInstructions', 'ingredients', 'name']
+
+        assert lists_are_equal(expectated_output, input_keys)
+
+
+
+    def test_recipe2(self):
+        recipes = scrape('test_data/sweetestkitchen-truffles.html',
+                             python_objects=True, migrate_old_schema=False)
+        recipe = recipes[0]
+
+        input_keys = list(recipe.keys())
+
+        expectated_output = ['prepTime', 'cookTime', 'name', 'recipeYield',
+                             'recipeCategory', 'image', 'description', '@type',
+                             'author', 'aggregateRating', 'ingredients',
+                             'recipeInstructions', 'totalTime', '@context']
+
+        assert lists_are_equal(expectated_output, input_keys)
 
 if __name__ == '__main__':
     unittest.main()

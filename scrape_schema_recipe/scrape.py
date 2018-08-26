@@ -27,7 +27,7 @@ import requests
 from typing import Callable, Dict, IO, List, Optional, Union
 import validators
 
-__version__ = '0.0.2'
+__version__ = '0.0.3'
 
 # Follow RFC 7231 sec. 5.5.3
 USER_AGENT_STR = 'scrape-schema-recipe/{} requests/{}'.format(
@@ -35,7 +35,7 @@ USER_AGENT_STR = 'scrape-schema-recipe/{} requests/{}'.format(
 
 
 def scrape(location: Union[str, IO[str]], python_objects: bool = False,
-           nonstandard_attrs: bool = False,
+           nonstandard_attrs: bool = False, migrate_old_schema: bool = True,
            user_agent_str: Optional[str] = None) -> List[Dict]:
     """
     Parse data in https://schema.org/Recipe format into a list of dictionaries
@@ -57,6 +57,10 @@ def scrape(location: Union[str, IO[str]], python_objects: bool = False,
             '_format' is either 'json-ld' or 'microdata' (how schema.org/Recipe was encoded into HTML)
             '_source_url' is the source url, when 'url' has already been defined as another value
         (defaults to False)
+
+    migrate_old_schema : boool, optional
+        when True it migrates the schema from older version to current version
+        (defaults to True)
 
     user_agent_str : string, optional
         overide the user_agent_string with this value.
@@ -102,6 +106,9 @@ def scrape(location: Union[str, IO[str]], python_objects: bool = False,
 
     scrapings = _convert_to_scrapings(data, nonstandard_attrs, url=url)
 
+    if migrate_old_schema is True:
+        scrapings = _migrate_old_schema(scrapings)
+
     if python_objects is True:
         scrapings = _pythonize_objects(scrapings)
 
@@ -109,7 +116,8 @@ def scrape(location: Union[str, IO[str]], python_objects: bool = False,
 
 
 def load(fp: Union[str, IO[str]], python_objects: bool = False,
-         nonstandard_attrs: bool = False) -> List[Dict]:
+         nonstandard_attrs: bool = False,
+         migrate_old_schema: bool = True) -> List[Dict]:
     """load a filename or file object to scrape
 
     Parameters
@@ -128,6 +136,10 @@ def load(fp: Union[str, IO[str]], python_objects: bool = False,
             '_format' is either 'json-ld' or 'microdata' (how schema.org/Recipe was encoded into HTML)
             '_source_url' is the source url, when 'url' has already been defined as another value
         (defaults to False)
+
+    migrate_old_schema : boool, optional
+        when True it migrates the schema from older version to current version
+        (defaults to True)
 
     Returns
     -------
@@ -151,6 +163,9 @@ def load(fp: Union[str, IO[str]], python_objects: bool = False,
 
     scrapings = _convert_to_scrapings(data, nonstandard_attrs)
 
+    if migrate_old_schema is True:
+        scrapings = _migrate_old_schema(scrapings)
+
     if python_objects is True:
         scrapings = _pythonize_objects(scrapings)
 
@@ -158,7 +173,8 @@ def load(fp: Union[str, IO[str]], python_objects: bool = False,
 
 
 def loads(string: str, python_objects: bool = False,
-          nonstandard_attrs: bool = False) -> List[Dict]:
+          nonstandard_attrs: bool = False,
+          migrate_old_schema: bool = True) -> List[Dict]:
     """scrapes a string
 
     Parameters
@@ -178,6 +194,10 @@ def loads(string: str, python_objects: bool = False,
             '_source_url' is the source url, when 'url' has already been defined as another value
         (defaults to False)
 
+    migrate_old_schema : boool, optional
+        when True it migrates the schema from older version to current version
+        (defaults to True)
+
     Returns
     -------
     list
@@ -194,6 +214,9 @@ def loads(string: str, python_objects: bool = False,
     data = extruct.extract(string)
     scrapings = _convert_to_scrapings(data, nonstandard_attrs)
 
+    if migrate_old_schema is True:
+        scrapings = _migrate_old_schema(scrapings)
+
     if python_objects is True:
         scrapings = _pythonize_objects(scrapings)
 
@@ -201,7 +224,9 @@ def loads(string: str, python_objects: bool = False,
 
 
 def scrape_url(url: str, python_objects: bool = False,
-               nonstandard_attrs: bool = False, user_agent_str: str = None):
+               nonstandard_attrs: bool = False,
+               migrate_old_schema: bool = True,
+               user_agent_str: str = None) -> List[Dict]:
     """scrape from a URL
 
     Parameters
@@ -220,6 +245,10 @@ def scrape_url(url: str, python_objects: bool = False,
             '_format' is either 'json-ld' or 'microdata' (how schema.org/Recipe was encoded into HTML)
             '_source_url' is the source url, when 'url' has already been defined as another value
         (defaults to False)
+
+    migrate_old_schema : boool, optional
+        when True it migrates the schema from older version to current version
+        (defaults to True)
 
     user_agent_str : string, optional
         overide the user_agent_string with this value.
@@ -248,6 +277,9 @@ def scrape_url(url: str, python_objects: bool = False,
     url = r.url
 
     scrapings = _convert_to_scrapings(data, nonstandard_attrs, url=url)
+
+    if migrate_old_schema is True:
+        scrapings = _migrate_old_schema(scrapings)
 
     if python_objects is True:
         scrapings = _pythonize_objects(scrapings)
@@ -354,5 +386,15 @@ def _convert_properties_scrape(recipes: List[Dict], properties: frozenset,
                 except (isodate.ISO8601Error, ValueError):
                     # parse error, just leave the value as is
                     pass
+
+    return recipes
+
+
+def _migrate_old_schema(recipes: List[Dict]) -> List[Dict]:
+    """Migrate old schema.org/Recipe version to current schema version."""
+    for i in range(len(recipes)):
+        # rename 'ingredients' to 'recipeIngredient'
+        if 'ingredients' in recipes[i]:
+            recipes[i]['recipeIngredient'] = recipes[i].pop('ingredients')
 
     return recipes
