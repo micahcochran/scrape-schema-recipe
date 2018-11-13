@@ -3,12 +3,15 @@ language: python
 # validators produces a DeprecationWarning in python 3.5+
 # validators version 12.1 produces the warning.  PR #61 would likely resolve that.
 # once resolved, it would be a good idea to up the version above that
-python:
-  - '3.4'
-  - '3.5'
-  - '3.6'
-  # 3.7 fails due to mypy needing a definition for datetime.date.fromisoformat
-  - '3.7-dev'
+matrix:
+  include:
+    - python: 2.7
+    - python: 3.4
+    - python: 3.5
+    - python: 3.6
+    - python: 3.7
+      dist: xenial
+      sudo: true
 
 
 
