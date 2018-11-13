@@ -1,5 +1,7 @@
 # scrape-schema-recipe
 
+![Build Status](https://travis-ci.org/micahcochran/scrape-schema-recipe.svg?branch=master)
+
 Scrapes recipes from HTML https://schema.org/Recipe (Microdata/JSON-LD) into Python dictionaries.
 
 Python version 3.4+
