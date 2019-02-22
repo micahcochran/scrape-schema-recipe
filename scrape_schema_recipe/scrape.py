@@ -271,7 +271,7 @@ def scrape_url(url: str, python_objects: bool = False,
     if not user_agent_str:
         user_agent_str = USER_AGENT_STR
 
-    r = requests.get(url, headers={'user_agent': user_agent_str})
+    r = requests.get(url, headers={'User-Agent': user_agent_str})
     r.raise_for_status()
     data = extruct.extract(r.text, r.url)
     url = r.url
