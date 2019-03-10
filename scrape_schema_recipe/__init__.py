@@ -15,3 +15,4 @@
 #
 
 from .scrape import __version__, load, loads, scrape, scrape_url
+from .example_output import example_names, example_output

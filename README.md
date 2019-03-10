@@ -1,6 +1,6 @@
 # scrape-schema-recipe
 
-![Build Status](https://travis-ci.org/micahcochran/scrape-schema-recipe.svg?branch=master)
+[![Build Status](https://travis-ci.org/micahcochran/scrape-schema-recipe.svg?branch=master)](https://travis-ci.org/micahcochran/scrape-schema-recipe)
 
 Scrapes recipes from HTML https://schema.org/Recipe (Microdata/JSON-LD) into Python dictionaries.
 
@@ -161,6 +161,10 @@ via the variable `user_agent_str`.
             '_source_url' is the source url, when 'url' has already been defined as another value
         (defaults to False)
 
+    migrate_old_schema : bool, optional
+        when True it migrates the schema from older version to current version
+        (defaults to True)
+
     user_agent_str : string, optional  ***only for scrape_url() and scrape()***
         overide the user_agent_string with this value.
         (defaults to None)
@@ -173,6 +177,22 @@ via the variable `user_agent_str`.
 ```
 
 These are also available with `help()` in the python console.
+
+## Example function
+There is data that can quickly get access for prototyping/debugging purposes.
+
+```python
+>>> from scrape_schema_recipes import example_names, example_output
+
+>>> example_names
+('irish-coffee', 'google', 'tart', 'tea-cake', 'truffles')
+
+>>> recipes = example_output('truffles')
+>>> recipes[0]['name']
+'Rum & Tonka Bean Dark Chocolate Truffles'
+```
+
+The `example_output()`  function accepts use all the same boolean flags that the other functions use.
 
 ## Files
 

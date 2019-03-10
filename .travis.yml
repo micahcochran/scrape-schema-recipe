@@ -1,8 +1,5 @@
 language: python
 
-# validators produces a DeprecationWarning in python 3.5+
-# validators version 12.1 produces the warning.  PR #61 would likely resolve that.
-# once resolved, it would be a good idea to up the version above that
 matrix:
   include:
     - python: 3.4
@@ -10,8 +7,6 @@ matrix:
     - python: 3.6
     - python: 3.7
       dist: xenial
-      sudo: true
-
 
 
 install:
@@ -19,9 +14,9 @@ install:
   - pip install .
   
 script:
-  # test the static typing
-  - mypy scrape_schema_recipe/scrape.py
-  
+  # test the static typing, except for Python 3.4
+  - if [[ $TRAVIS_PYTHON_VERSION != 3.4 ]]; then mypy scrape_schema_recipe/scrape.py; fi
+
   - python test_scrape.py
   # runs test and coverage
   # - python3 -m nose2

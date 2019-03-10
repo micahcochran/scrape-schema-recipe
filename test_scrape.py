@@ -24,6 +24,7 @@ import unittest
 from typing import List
 
 from scrape_schema_recipe import load, loads, scrape, scrape_url
+from scrape_schema_recipe import example_output
 
 
 def lists_are_equal(lst1: List, lst2: List) -> bool:
@@ -80,7 +81,8 @@ class TestParsingFileMicroData2(unittest.TestCase):
         assert lists_are_equal(expectated_output, input_keys)
 
     def test_name(self):
-        assert self.recipe['name'] == 'Rum & Tonka Bean Dark Chocolate Truffles'
+        assert self.recipe['name'] \
+            == 'Rum & Tonka Bean Dark Chocolate Truffles'
 
     def test_recipe_yield(self):
         assert self.recipe['recipeYield'] == '15-18 3cm squares'
@@ -142,7 +144,7 @@ class TestTimeDelta(unittest.TestCase):
         cls.recipe = cls.recipes[0]
 
     def test_timedelta(self):
-        td = datetime.timedelta(minutes = 10)
+        td = datetime.timedelta(minutes=10)
         assert self.recipe['prepTime'] == td
 
     def test_totalTime_sum(self):
@@ -186,7 +188,6 @@ class TestLoads(unittest.TestCase):
         assert self.recipe['name'] == 'Irish Coffee'
 
 
-
 # feed bad types into the fuctions
 class BadTypes(unittest.TestCase):
     def test_load(self):
@@ -225,12 +226,12 @@ class TestURL(unittest.TestCase):
 # test that the schema still works unmigrated
 class TestUnMigratedSchema(unittest.TestCase):
 
-# Some of these examples use 'ingredients', which was superceeded by
-# 'recipeIngredients' in the http://schema.org/Recipe standard for a list 
-# of ingredients in a recipe.
+    # Some of these examples use 'ingredients', which was superceeded by
+    # 'recipeIngredients' in the http://schema.org/Recipe standard for a list
+    # of ingredients in a recipe.
 
     def test_recipe1(self):
-        recipes = load('test_data/foodista-british-treacle-tart.html', 
+        recipes = load('test_data/foodista-british-treacle-tart.html',
                        migrate_old_schema=False)
         recipe = recipes[0]
 
@@ -242,11 +243,9 @@ class TestUnMigratedSchema(unittest.TestCase):
 
         assert lists_are_equal(expectated_output, input_keys)
 
-
-
     def test_recipe2(self):
         recipes = scrape('test_data/sweetestkitchen-truffles.html',
-                             python_objects=True, migrate_old_schema=False)
+                         python_objects=True, migrate_old_schema=False)
         recipe = recipes[0]
 
         input_keys = list(recipe.keys())
@@ -257,6 +256,13 @@ class TestUnMigratedSchema(unittest.TestCase):
                              'recipeInstructions', 'totalTime', '@context']
 
         assert lists_are_equal(expectated_output, input_keys)
+
+
+class TestExampleOutput(unittest.TestCase):
+    def test_example_output(self):
+        name = example_output('tea-cake')[0]['name']
+        assert name == 'Meyer Lemon Poppyseed Tea Cakes'
+
 
 if __name__ == '__main__':
     unittest.main()

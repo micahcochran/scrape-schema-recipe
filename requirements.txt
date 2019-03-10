@@ -3,4 +3,4 @@ extruct
 isodate >= 0.5.1
 requests
 typing; python_version < '3.5'
-validators
+validators >= 0.12.4

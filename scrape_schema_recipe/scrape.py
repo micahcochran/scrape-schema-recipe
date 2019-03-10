@@ -16,18 +16,18 @@
 
 # internal libs
 import datetime
+from pathlib import Path
 import sys
-
+# for mypy
+from typing import Callable, Dict, IO, List, Optional, Union
 
 # external libs
 import extruct
 import isodate
 import requests
-# for mypy
-from typing import Callable, Dict, IO, List, Optional, Union
 import validators
 
-__version__ = '0.0.3'
+__version__ = '0.0.4'
 
 # Follow RFC 7231 sec. 5.5.3
 USER_AGENT_STR = 'scrape-schema-recipe/{} requests/{}'.format(
@@ -58,7 +58,7 @@ def scrape(location: Union[str, IO[str]], python_objects: bool = False,
             '_source_url' is the source url, when 'url' has already been defined as another value
         (defaults to False)
 
-    migrate_old_schema : boool, optional
+    migrate_old_schema : bool, optional
         when True it migrates the schema from older version to current version
         (defaults to True)
 
@@ -115,7 +115,7 @@ def scrape(location: Union[str, IO[str]], python_objects: bool = False,
     return scrapings
 
 
-def load(fp: Union[str, IO[str]], python_objects: bool = False,
+def load(fp: Union[str, IO[str], Path], python_objects: bool = False,
          nonstandard_attrs: bool = False,
          migrate_old_schema: bool = True) -> List[Dict]:
     """load a filename or file object to scrape
@@ -125,7 +125,7 @@ def load(fp: Union[str, IO[str]], python_objects: bool = False,
     fp : string or file-like object
         A file name or a file-like object.
 
-    python_object : bool, optional
+    python_objects : bool, optional
         when True it translates some data types into python objects
         dates into datetime.date, datetimes into datetime.datetimes,
         durations as dateime.timedelta.  (defaults to False)
@@ -137,7 +137,7 @@ def load(fp: Union[str, IO[str]], python_objects: bool = False,
             '_source_url' is the source url, when 'url' has already been defined as another value
         (defaults to False)
 
-    migrate_old_schema : boool, optional
+    migrate_old_schema : bool, optional
         when True it migrates the schema from older version to current version
         (defaults to True)
 
@@ -154,12 +154,21 @@ def load(fp: Union[str, IO[str]], python_objects: bool = False,
     if isinstance(fp, str):
         with open(fp) as f:
             data = extruct.extract(f.read())
+    elif isinstance(fp, Path):
+        if sys.version_info < (3, 5):
+            # Path.open() as f, produces mypy type assigment error (ignored) which states:
+            #       error: Incompatible types in assignment (expression has type "IO[Any]", variable has type "TextIO")
+            with fp.open(mode='rt') as f:               # type: ignore
+                data = extruct.extract(f.read())
+        else:
+            data = extruct.extract(fp.read_text())
     elif hasattr(fp, 'read'):
         # Assume this is some kind of file-like object that can be read.
         data = extruct.extract(fp.read())
     else:
-        raise TypeError('expected, fp to be a filename or a file-like object, '
-                        'fp is of type {}'.format(type(fp)))
+        err_msg = 'expected, fp to be a filename, pathlib.Path object, ' \
+            'or a file-like object, fp is of type {}'.format(type(fp))
+        raise TypeError(err_msg)
 
     scrapings = _convert_to_scrapings(data, nonstandard_attrs)
 
@@ -182,7 +191,7 @@ def loads(string: str, python_objects: bool = False,
     string : string
         A text string of HTML.
 
-    python_object : bool, optional
+    python_objects : bool, optional
         when True it translates some data types into python objects
         dates into datetime.date, datetimes into datetime.datetimes,
         durations as dateime.timedelta.  (defaults to False)
@@ -194,7 +203,7 @@ def loads(string: str, python_objects: bool = False,
             '_source_url' is the source url, when 'url' has already been defined as another value
         (defaults to False)
 
-    migrate_old_schema : boool, optional
+    migrate_old_schema : bool, optional
         when True it migrates the schema from older version to current version
         (defaults to True)
 
@@ -234,7 +243,7 @@ def scrape_url(url: str, python_objects: bool = False,
     url : string
         A url to download data from and scrape.
 
-    python_object : bool, optional
+    python_objects : bool, optional
         when True it translates some data types into python objects
         dates into datetime.date, datetimes into datetime.datetimes,
         durations as dateime.timedelta.  (defaults to False)
@@ -246,7 +255,7 @@ def scrape_url(url: str, python_objects: bool = False,
             '_source_url' is the source url, when 'url' has already been defined as another value
         (defaults to False)
 
-    migrate_old_schema : boool, optional
+    migrate_old_schema : bool, optional
         when True it migrates the schema from older version to current version
         (defaults to True)
 
