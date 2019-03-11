@@ -1,17 +1,17 @@
 language: python
 
-env: RUN_MYPY="yes"
+env: RUN_MYPY=true
 
 matrix:
   include:
     - python: 3.4
-      env: RUN_MYPY="no"
+      env: RUN_MYPY=false
     - python: 3.5
     - python: 3.6
     - python: 3.7
       dist: xenial
     - python: "pypy3.5"
-      env: RUN_MYPY="no"
+      env: RUN_MYPY=false
 
 
 install:
@@ -20,7 +20,7 @@ install:
   
 script:
   # test the static typing
-  - if [[ $RUN_MYPY ==  "yes"]]; then mypy scrape_schema_recipe/scrape.py; fi
+  - if [ $RUN_MYPY ]; then mypy scrape_schema_recipe/scrape.py; fi
 
   - python test_scrape.py
   # runs test and coverage
