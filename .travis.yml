@@ -5,7 +5,6 @@ env: RUN_MYPY=true
 matrix:
   include:
     - python: 3.4
-      env: RUN_MYPY=false
     - python: 3.5
     - python: 3.6
     - python: 3.7
