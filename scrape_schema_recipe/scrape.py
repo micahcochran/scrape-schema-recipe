@@ -27,7 +27,15 @@ import isodate
 import requests
 import validators
 
-__version__ = '0.0.4'
+# __version__ = '0.0.4'
+
+_PACKAGE_PATH = Path(__file__).resolve().parent
+
+# Python 3.5+
+# __version__ = (_PACKAGE_PATH / 'VERSION').read_text().strip()
+__version__ = None
+with (_PACKAGE_PATH / 'VERSION').open() as _fp:
+    __version__ = _fp.read().strip()
 
 # Follow RFC 7231 sec. 5.5.3
 USER_AGENT_STR = 'scrape-schema-recipe/{} requests/{}'.format(

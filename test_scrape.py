@@ -24,7 +24,7 @@ import unittest
 from typing import List
 
 from scrape_schema_recipe import load, loads, scrape, scrape_url
-from scrape_schema_recipe import example_output
+from scrape_schema_recipe import example_output, __version__
 
 
 def lists_are_equal(lst1: List, lst2: List) -> bool:
@@ -262,6 +262,14 @@ class TestExampleOutput(unittest.TestCase):
     def test_example_output(self):
         name = example_output('tea-cake')[0]['name']
         assert name == 'Meyer Lemon Poppyseed Tea Cakes'
+
+
+class TestVersion(unittest.TestCase):
+    def test_version_not_null(self):
+        assert __version__ is not None
+
+    def test_version_is_type_string(self):
+        assert isinstance(__version__, str)
 
 
 if __name__ == '__main__':
