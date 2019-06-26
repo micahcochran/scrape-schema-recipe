@@ -1,5 +1,5 @@
 #
-# Copyright 2018 Micah Cochran
+# Copyright 2019 Micah Cochran
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import datetime
 from pathlib import Path
 import sys
 # for mypy
-from typing import Callable, Dict, IO, List, Optional, Union
+from typing import Callable, Dict, IO, List, Optional, Tuple, Union
 
 # external libs
 import extruct
@@ -27,22 +27,20 @@ import isodate
 import requests
 import validators
 
-# __version__ = '0.0.4'
 
 _PACKAGE_PATH = Path(__file__).resolve().parent
 
-# Python 3.5+
-# __version__ = (_PACKAGE_PATH / 'VERSION').read_text().strip()
-__version__ = None
-with (_PACKAGE_PATH / 'VERSION').open() as _fp:
-    __version__ = _fp.read().strip()
+# read version from VERSION file
+__version__ = (_PACKAGE_PATH / 'VERSION').read_text().strip()
+
 
 # Follow RFC 7231 sec. 5.5.3
 USER_AGENT_STR = 'scrape-schema-recipe/{} requests/{}'.format(
                                             __version__, requests.__version__)
 
 
-def scrape(location: Union[str, IO[str]], python_objects: bool = False,
+def scrape(location: Union[str, IO[str]],
+           python_objects: Union[bool, List, Tuple] = False,
            nonstandard_attrs: bool = False, migrate_old_schema: bool = True,
            user_agent_str: Optional[str] = None) -> List[Dict]:
     """
@@ -54,10 +52,17 @@ def scrape(location: Union[str, IO[str]], python_objects: bool = False,
     location : string or file-like object
         A url, filename, or text_string of HTML, or a file-like object.
 
-    python_object : bool, optional
-        when True it translates some data types into python objects
-        dates into datetime.date, datetimes into datetime.datetimes,
-        durations as dateime.timedelta.  (defaults to False)
+    python_objects : bool, list, tuple  (optional)
+        when True it translates certain data types into python objects
+          dates into datetime.date, datetimes into datetime.datetimes,
+          durations as dateime.timedelta.
+        when set to a list or tuple only converts types specified to
+          python objects:
+          when set to either [dateime.date] or [datetime.datetimes] either will
+            convert dates.
+          when set to [datetime.timedelta] durations will be converted
+        when False no conversion is performed
+        (defaults to False)
 
     nonstandard_attrs : bool, optional
         when True it adds nonstandard (for schema.org/Recipe) attributes to the
@@ -117,13 +122,14 @@ def scrape(location: Union[str, IO[str]], python_objects: bool = False,
     if migrate_old_schema is True:
         scrapings = _migrate_old_schema(scrapings)
 
-    if python_objects is True:
-        scrapings = _pythonize_objects(scrapings)
+    if python_objects is not False:
+        scrapings = _pythonize_objects(scrapings, python_objects)
 
     return scrapings
 
 
-def load(fp: Union[str, IO[str], Path], python_objects: bool = False,
+def load(fp: Union[str, IO[str], Path],
+         python_objects: Union[bool, List, Tuple] = False,
          nonstandard_attrs: bool = False,
          migrate_old_schema: bool = True) -> List[Dict]:
     """load a filename or file object to scrape
@@ -133,10 +139,17 @@ def load(fp: Union[str, IO[str], Path], python_objects: bool = False,
     fp : string or file-like object
         A file name or a file-like object.
 
-    python_objects : bool, optional
-        when True it translates some data types into python objects
-        dates into datetime.date, datetimes into datetime.datetimes,
-        durations as dateime.timedelta.  (defaults to False)
+    python_objects : bool, list, tuple  (optional)
+        when True it translates certain data types into python objects
+          dates into datetime.date, datetimes into datetime.datetimes,
+          durations as dateime.timedelta.
+        when set to a list or tuple only converts types specified to
+          python objects:
+          when set to either [dateime.date] or [datetime.datetimes] either will
+            convert dates.
+          when set to [datetime.timedelta] durations will be converted
+        when False no conversion is performed
+        (defaults to False)
 
     nonstandard_attrs : bool, optional
         when True it adds nonstandard (for schema.org/Recipe) attributes to the
@@ -163,13 +176,7 @@ def load(fp: Union[str, IO[str], Path], python_objects: bool = False,
         with open(fp) as f:
             data = extruct.extract(f.read())
     elif isinstance(fp, Path):
-        if sys.version_info < (3, 5):
-            # Path.open() as f, produces mypy type assigment error (ignored) which states:
-            #       error: Incompatible types in assignment (expression has type "IO[Any]", variable has type "TextIO")
-            with fp.open(mode='rt') as f:               # type: ignore
-                data = extruct.extract(f.read())
-        else:
-            data = extruct.extract(fp.read_text())
+        data = extruct.extract(fp.read_text())
     elif hasattr(fp, 'read'):
         # Assume this is some kind of file-like object that can be read.
         data = extruct.extract(fp.read())
@@ -183,13 +190,13 @@ def load(fp: Union[str, IO[str], Path], python_objects: bool = False,
     if migrate_old_schema is True:
         scrapings = _migrate_old_schema(scrapings)
 
-    if python_objects is True:
-        scrapings = _pythonize_objects(scrapings)
+    if python_objects is not False:
+        scrapings = _pythonize_objects(scrapings, python_objects)
 
     return scrapings
 
 
-def loads(string: str, python_objects: bool = False,
+def loads(string: str, python_objects: Union[bool, List, Tuple] = False,
           nonstandard_attrs: bool = False,
           migrate_old_schema: bool = True) -> List[Dict]:
     """scrapes a string
@@ -199,10 +206,17 @@ def loads(string: str, python_objects: bool = False,
     string : string
         A text string of HTML.
 
-    python_objects : bool, optional
-        when True it translates some data types into python objects
-        dates into datetime.date, datetimes into datetime.datetimes,
-        durations as dateime.timedelta.  (defaults to False)
+    python_objects : bool, list, tuple  (optional)
+        when True it translates certain data types into python objects
+          dates into datetime.date, datetimes into datetime.datetimes,
+          durations as dateime.timedelta.
+        when set to a list or tuple only converts types specified to
+          python objects:
+          when set to either [dateime.date] or [datetime.datetimes] either will
+            convert dates.
+          when set to [datetime.timedelta] durations will be converted
+        when False no conversion is performed
+        (defaults to False)
 
     nonstandard_attrs : bool, optional
         when True it adds nonstandard (for schema.org/Recipe) attributes to the
@@ -234,13 +248,13 @@ def loads(string: str, python_objects: bool = False,
     if migrate_old_schema is True:
         scrapings = _migrate_old_schema(scrapings)
 
-    if python_objects is True:
-        scrapings = _pythonize_objects(scrapings)
+    if python_objects is not False:
+        scrapings = _pythonize_objects(scrapings, python_objects)
 
     return scrapings
 
 
-def scrape_url(url: str, python_objects: bool = False,
+def scrape_url(url: str, python_objects: Union[bool, List, Tuple] = False,
                nonstandard_attrs: bool = False,
                migrate_old_schema: bool = True,
                user_agent_str: str = None) -> List[Dict]:
@@ -251,10 +265,17 @@ def scrape_url(url: str, python_objects: bool = False,
     url : string
         A url to download data from and scrape.
 
-    python_objects : bool, optional
-        when True it translates some data types into python objects
-        dates into datetime.date, datetimes into datetime.datetimes,
-        durations as dateime.timedelta.  (defaults to False)
+    python_objects : bool, list, tuple  (optional)
+        when True it translates certain data types into python objects
+          dates into datetime.date, datetimes into datetime.datetimes,
+          durations as dateime.timedelta.
+        when set to a list or tuple only converts types specified to
+          python objects:
+          when set to either [dateime.date] or [datetime.datetimes] either will
+            convert dates.
+          when set to [datetime.timedelta] durations will be converted
+        when False no conversion is performed
+        (defaults to False)
 
     nonstandard_attrs : bool, optional
         when True it adds nonstandard (for schema.org/Recipe) attributes to the
@@ -298,8 +319,8 @@ def scrape_url(url: str, python_objects: bool = False,
     if migrate_old_schema is True:
         scrapings = _migrate_old_schema(scrapings)
 
-    if python_objects is True:
-        scrapings = _pythonize_objects(scrapings)
+    if python_objects is not False:
+        scrapings = _pythonize_objects(scrapings, python_objects)
 
     return scrapings
 
@@ -381,14 +402,36 @@ def _parse_determine_date_datetime(s: str) -> Union[datetime.datetime,
             return isodate.parse_date(s)
 
 
-def _pythonize_objects(scrapings: List[Dict]) -> List[Dict]:
-    # convert ISO 8601 date times into timedelta
-    scrapings = _convert_properties_scrape(scrapings, DURATION_PROPERTIES,
-                                           isodate.parse_duration)
+# Test if lists/tuples have contain matching items
+def _have_matching_items(lst1: Union[bool, List, Tuple],
+                         lst2: Union[bool, List, Tuple]):
+    if isinstance(lst1, bool):
+        return lst1
 
-    # convert ISO 8601 date times into datetimes.datetime objects
-    scrapings = _convert_properties_scrape(scrapings, DATETIME_PROPERTIES,
-                                           _parse_determine_date_datetime)
+    if isinstance(lst2, bool):
+        return lst2
+
+    s = set(lst1).intersection(lst2)
+    return len(s) > 0
+
+
+def _pythonize_objects(scrapings: List[Dict], python_objects: Union[bool,
+                       List, Tuple]) -> List[Dict]:
+
+    if python_objects is False:
+        # this really should not be happening
+        return scrapings
+
+    # this should work, mypy gives error, this isn't bulletproof code
+    if python_objects is True or datetime.timedelta in python_objects: # type: ignore
+        # convert ISO 8601 date times into timedelta
+        scrapings = _convert_properties_scrape(scrapings, DURATION_PROPERTIES,
+                                               isodate.parse_duration)
+
+    if python_objects is True or _have_matching_items((datetime.date, datetime.datetime), python_objects):
+        # convert ISO 8601 date times into datetimes.datetime objects
+        scrapings = _convert_properties_scrape(scrapings, DATETIME_PROPERTIES,
+                                               _parse_determine_date_datetime)
 
     return scrapings
 

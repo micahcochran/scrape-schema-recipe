@@ -2,5 +2,4 @@ setuptools >= 30.3.0
 extruct
 isodate >= 0.5.1
 requests
-typing; python_version < '3.5'
 validators >= 0.12.4
