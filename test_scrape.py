@@ -272,5 +272,32 @@ class TestVersion(unittest.TestCase):
         assert isinstance(__version__, str)
 
 
+class TestPythonObjects(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # these are named based on what is passed via python_objects
+        cls.true = example_output('google', python_objects=True)[0]
+        cls.false = example_output('google', python_objects=False)[0]
+        cls.duration = example_output('google', python_objects=[datetime.timedelta])[0]
+        cls.dates = example_output('google', python_objects=[datetime.date])[0]
+
+    def testDurationTypes(self):
+        assert isinstance(self.duration['cookTime'], datetime.timedelta) 
+        assert isinstance(self.duration['prepTime'], datetime.timedelta) 
+        assert isinstance(self.duration['totalTime'], datetime.timedelta) 
+
+    def testDurationEqual(self):
+        assert self.duration['cookTime'] == self.true['cookTime']
+        assert self.duration['prepTime'] == self.true['prepTime']
+        assert self.duration['totalTime'] == self.true['totalTime']
+
+    def testDateTypes(self):
+        assert isinstance(self.dates['datePublished'], datetime.date)
+        # note that datePublished can also be of type datetime.dateime
+
+    def testDatesEqual(self):
+        assert self.dates['datePublished'] == self.true['datePublished']
+
+
 if __name__ == '__main__':
     unittest.main()

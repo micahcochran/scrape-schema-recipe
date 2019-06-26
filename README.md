@@ -4,7 +4,7 @@
 
 Scrapes recipes from HTML https://schema.org/Recipe (Microdata/JSON-LD) into Python dictionaries.
 
-Python version 3.4+
+Python version 3.5+
 
 This library relies heavily upon [extruct](https://github.com/scrapinghub/extruct).
 

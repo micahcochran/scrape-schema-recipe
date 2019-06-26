@@ -1,7 +1,7 @@
 from .scrape import load
 
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Tuple, Union
 
 # _PACKAGE_PATH = Path(os.path.dirname(os.path.abspath(__file__)))
 _PACKAGE_PATH = Path(__file__).resolve().parent
@@ -17,7 +17,8 @@ _ex_name_filename = {'irish-coffee': 'bevvy-irish-coffee.html',
                      'truffles': 'sweetestkitchen-truffles.html'}
 
 
-def example_output(name: str,  python_objects: bool = False,
+def example_output(name: str,
+                   python_objects: Union[bool, List, Tuple] = False,
                    nonstandard_attrs: bool = False,
                    migrate_old_schema: bool = True) -> List[Dict]:
     """
@@ -32,7 +33,7 @@ def example_output(name: str,  python_objects: bool = False,
     name : string
         the name of the example
 
-    python_objects : bool, optional  (defaults to False)
+    python_objects : bool, list, tuple  (optional) (defaults to False)
     nonstandard_attrs : bool, optional (defaults to False)
     migrate_old_schema : bool, optional (defaults to True)
 
