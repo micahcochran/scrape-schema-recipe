@@ -4,15 +4,23 @@
 
 Scrapes recipes from HTML https://schema.org/Recipe (Microdata/JSON-LD) into Python dictionaries.
 
-Python version 3.5+
-
-This library relies heavily upon [extruct](https://github.com/scrapinghub/extruct).
 
 ## Install
 
 ```
 pip install scrape-schema-recipe
 ```
+
+## Requirements
+
+Python version 3.5+
+
+This library relies heavily upon [extruct](https://github.com/scrapinghub/extruct).
+
+Other requirements: 
+* isodate (>=0.5.1)
+* requests
+* validators (>=12.4).
 
 ## Online Example
 
@@ -45,7 +53,7 @@ pip install scrape-schema-recipe
   'name': 'Alton Brown',
   'url': 'https://www.foodnetwork.com/profiles/talent/alton-brown'}]
 ```
-'@type': 'Person' means a https://schema.org/Person object
+'@type': 'Person' is a [https://schema.org/Person](https://schema.org/Person) object
 
 
 ```python
@@ -65,7 +73,7 @@ datetime.timedelta(0, 300)
 <Duration [5 minutes]>
 ```
 
-If python_objects wasn't set to True, this would return the string ISO8611 representation of the duration, `'PT5M'`
+If `python_objects` is set to `False`, this would return the string ISO8611 representation of the duration, `'PT5M'`
 
 [pendulum's library website](https://pendulum.eustace.io/).
 
@@ -119,7 +127,7 @@ datetime.date(2018, 3, 10)
 ```
 
 
-## What Happens when Things Go Wrong
+## What Happens When Things Go Wrong
 
 If there aren't any http://schema.org/Recipe formatted recipes on the site.
 ```python
@@ -149,10 +157,17 @@ via the variable `user_agent_str`.
     location : string or file-like object
         A url, filename, or text_string of HTML, or a file-like object.
 
-    python_object : bool, optional
-        when True it translates some data types into python objects
-        dates into datetime.date, datetimes into datetime.datetimes,
-        durations as dateime.timedelta.  (defaults to False)
+    python_objects : bool, list, or tuple  (optional)
+        when True it translates certain data types into python objects
+          dates into datetime.date, datetimes into datetime.datetimes,
+          durations as dateime.timedelta.
+        when set to a list or tuple only converts types specified to
+          python objects:
+            * when set to either [dateime.date] or [datetime.datetimes] either will
+              convert dates.
+            * when set to [datetime.timedelta] durations will be converted
+        when False no conversion is performed
+        (defaults to False)
 
     nonstandard_attrs : bool, optional
         when True it adds nonstandard (for schema.org/Recipe) attributes to the
@@ -179,7 +194,8 @@ via the variable `user_agent_str`.
 These are also available with `help()` in the python console.
 
 ## Example function
-There is data that can quickly get access for prototyping/debugging purposes.
+The `example_output()` function gives quick access to data for prototyping and debugging.
+It accepts the same parameters as load(), but the first parameter, `name`, is different.
 
 ```python
 >>> from scrape_schema_recipes import example_names, example_output
@@ -192,7 +208,6 @@ There is data that can quickly get access for prototyping/debugging purposes.
 'Rum & Tonka Bean Dark Chocolate Truffles'
 ```
 
-The `example_output()`  function accepts use all the same boolean flags that the other functions use.
 
 ## Files
 
@@ -214,8 +229,8 @@ from the project directory:
  schema-recipe-scraper$ mypy schema_recipe_scraper/scrape.py
 ```
 
-If you run mypy from another directory the `--ingnore-missing-imports` flag will need to be added,
-thus `$ mypy --ingnore-missing-imports scrape.py`
+If you run mypy from another directory the `--ignore-missing-imports` flag will need to be added,
+thus `$ mypy --ignore-missing-imports scrape.py`
 
 `--ignore-missing-imports` flag is used because most libraries don't have static typing information contained
 in their own code or typeshed.
@@ -224,7 +239,7 @@ in their own code or typeshed.
 Here are some references for how schema.org/Recipe *should* be structured:
 
 * [https://schema.org/Recipe](https://schema.org/Recipe) - official specification
-* [Recipe Google Search Guide](https://developers.google.com/search/docs/data-types/recipe) - material teaching devlopers how to use the schema (with a little emphasis structured data impacts search results)
+* [Recipe Google Search Guide](https://developers.google.com/search/docs/data-types/recipe) - material teaching developers how to use the schema (with emphasis on how structured data impacts search results)
 
 
 ## Other Similar Python Libraries
