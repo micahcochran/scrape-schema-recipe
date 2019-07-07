@@ -325,24 +325,41 @@ def scrape_url(url: str, python_objects: Union[bool, List, Tuple] = False,
     return scrapings
 
 
+def _convert_json_ld_recipe(rec: Dict,
+                            nonstandard_attrs: bool = False,
+                            url: str = None) -> Dict:
+    """Helper function for _convert_to_scraping
+    for a json-ld record adding extra tags"""
+    # not sure if a copy is necessary?
+    d = rec.copy()
+    if nonstandard_attrs is True:
+        d['_format'] = 'json-ld'
+    # store the url
+    if url:
+        if d.get('url') and d.get('url') != url and nonstandard_attrs is True:
+            d['_source_url'] = url
+        else:
+            d['url'] = url
+    return d
+
+
 def _convert_to_scrapings(data: Dict[str, List[Dict]],
                           nonstandard_attrs: bool = False,
                           url: str = None) -> List[Dict]:
+    """dectects schema.org/Recipe content and extracts it"""
     out = []
     if data['json-ld'] != []:
         for rec in data['json-ld']:
-            if rec['@type'] == 'Recipe':
-                d = rec.copy()
-                if nonstandard_attrs is True:
-                    d['_format'] = 'json-ld'
-                # store the url
-                if url:
-                    if d.get('url') and d.get('url') != url and \
-                                            nonstandard_attrs is True:
-                        d['_source_url'] = url
-                    else:
-                        d['url'] = url
+            if rec.get('@type') == 'Recipe':
+                d = _convert_json_ld_recipe(rec, nonstandard_attrs, url)
                 out.append(d)
+
+            if rec.get('@context') == 'https://schema.org' and '@graph' in rec.keys():
+                # walk the graph
+                for subrec in rec['@graph']:
+                    if subrec['@type'] == 'Recipe':
+                        d = _convert_json_ld_recipe(subrec, nonstandard_attrs, url)
+                        out.append(d)
 
     if data['microdata'] != []:
         for rec in data['microdata']:
@@ -423,7 +440,7 @@ def _pythonize_objects(scrapings: List[Dict], python_objects: Union[bool,
         return scrapings
 
     # this should work, mypy gives error, this isn't bulletproof code
-    if python_objects is True or datetime.timedelta in python_objects: # type: ignore
+    if python_objects is True or datetime.timedelta in python_objects:  # type: ignore
         # convert ISO 8601 date times into timedelta
         scrapings = _convert_properties_scrape(scrapings, DURATION_PROPERTIES,
                                                isodate.parse_duration)
