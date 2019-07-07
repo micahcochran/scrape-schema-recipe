@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 #
-# Copyright 2018 Micah Cochran
+# Copyright 2019 Micah Cochran
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,11 +20,13 @@
 import datetime
 import isodate
 import unittest
-
+from pathlib import Path
 from typing import List
 
 from scrape_schema_recipe import load, loads, scrape, scrape_url
 from scrape_schema_recipe import example_output, __version__
+
+DISABLE_NETWORK_TESTS = False
 
 
 def lists_are_equal(lst1: List, lst2: List) -> bool:
@@ -98,7 +100,7 @@ class TestParsingFileMicroData2(unittest.TestCase):
 class TestParsingFileLDJSON(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.recipes = scrape('test_data/bevvy-irish-coffee.html')
+        cls.recipes = scrape('test_data/bevvy-irish-coffee-2018.html')
         cls.recipe = cls.recipes[0]
 
     def test_category(self):
@@ -115,6 +117,7 @@ class TestParsingFileLDJSON(unittest.TestCase):
 
         assert lists_are_equal(ingredients, self.recipe['recipeIngredient'])
 
+    # in the 2019 version this was changed
     def test_instructions(self):
         expected_str = 'Add Irish whiskey, brown sugar syrup, and hot coffee to an Irish coffee mug.\nTop with whipped cream.'
 
@@ -139,7 +142,7 @@ class TestTimeDelta(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.recipes = scrape(
-                        'test_data/crumb-lemon-tea-cakes.html',
+                        'test_data/crumb-lemon-tea-cakes-2018.html',
                         python_objects=True)
         cls.recipe = cls.recipes[0]
 
@@ -180,12 +183,12 @@ class TestDateTime(unittest.TestCase):
 # test loads()
 class TestLoads(unittest.TestCase):
     def test_loads(self):
-        with open('test_data/bevvy-irish-coffee.html') as fp:
+        with open('test_data/bevvy-irish-coffee-2019.html') as fp:
             s = fp.read()
 
-        self.recipes = loads(s)
-        self.recipe = self.recipes[0]
-        assert self.recipe['name'] == 'Irish Coffee'
+        recipes = loads(s)
+        recipe = recipes[0]
+        assert recipe['name'] == 'Irish Coffee'
 
 
 # feed bad types into the fuctions
@@ -210,13 +213,15 @@ class BadTypes(unittest.TestCase):
 class TestURL(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.url = 'https://raw.githubusercontent.com/micahcochran/scrape-schema-recipe/master/test_data/bevvy-irish-coffee.html'
+        cls.url = 'https://raw.githubusercontent.com/micahcochran/scrape-schema-recipe/master/test_data/bevvy-irish-coffee-2018.html'
 
+    @unittest.skipIf(DISABLE_NETWORK_TESTS is True, 'network tests disabled')
     def test_scrape_url(self):
         self.recipes = scrape_url(self.url)
         self.recipe = self.recipes[0]
         assert self.recipe['name'] == 'Irish Coffee'
 
+    @unittest.skipIf(DISABLE_NETWORK_TESTS is True, 'network tests disabled')
     def test_scrape(self):
         self.recipes = scrape(self.url)
         self.recipe = self.recipes[0]
@@ -282,9 +287,9 @@ class TestPythonObjects(unittest.TestCase):
         cls.dates = example_output('google', python_objects=[datetime.date])[0]
 
     def testDurationTypes(self):
-        assert isinstance(self.duration['cookTime'], datetime.timedelta) 
-        assert isinstance(self.duration['prepTime'], datetime.timedelta) 
-        assert isinstance(self.duration['totalTime'], datetime.timedelta) 
+        assert isinstance(self.duration['cookTime'], datetime.timedelta)
+        assert isinstance(self.duration['prepTime'], datetime.timedelta)
+        assert isinstance(self.duration['totalTime'], datetime.timedelta)
 
     def testDurationEqual(self):
         assert self.duration['cookTime'] == self.true['cookTime']
@@ -297,6 +302,33 @@ class TestPythonObjects(unittest.TestCase):
 
     def testDatesEqual(self):
         assert self.dates['datePublished'] == self.true['datePublished']
+
+
+class TestGraph(unittest.TestCase):
+    # tests @graph, also test Path
+    def test_graph(self):
+        recipes_old = load('test_data/crumb-lemon-tea-cakes-2018.html',
+                           python_objects=True)
+        recipes_graph = load(Path('test_data/crumb-lemon-tea-cakes-2019.html'),
+                             python_objects=True)
+
+        r_old = recipes_old[0]
+        r_graph = recipes_graph[0]
+
+        assert r_old['name'] == r_graph['name']
+        assert r_old['recipeCategory'] == r_graph['recipeCategory']
+        assert r_old['recipeCuisine'] == r_graph['recipeCuisine']
+        assert r_old['recipeIngredient'] == r_graph['recipeIngredient']
+        assert r_old['recipeYield'] == r_graph['recipeYield']
+        assert r_old['totalTime'] == r_graph['totalTime']
+
+        # ---- check differences ----
+        # the recipeInstructions in 2019 version are HowToStep format, 2018 version are in a list
+        assert r_old['recipeInstructions'] != r_graph['recipeInstructions']
+
+        # 2019 has a datePublished, 2018 version does not
+        r_graph['datePublished'] == datetime.date(2018, 3, 19)
+        assert 'datePublished' not in r_old.keys()
 
 
 if __name__ == '__main__':

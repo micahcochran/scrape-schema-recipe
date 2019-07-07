@@ -10,10 +10,10 @@ _TEST_DATA_PATH = '../test_data/'
 
 example_names = ('irish-coffee', 'google', 'tart', 'tea-cake', 'truffles')
 
-_ex_name_filename = {'irish-coffee': 'bevvy-irish-coffee.html',
+_ex_name_filename = {'irish-coffee': 'bevvy-irish-coffee-2019.html',
                      'google': 'google-recipe-example.html',
                      'tart': 'foodista-british-treacle-tart.html',
-                     'tea-cake': 'crumb-lemon-tea-cakes.html',
+                     'tea-cake': 'crumb-lemon-tea-cakes-2019.html',
                      'truffles': 'sweetestkitchen-truffles.html'}
 
 
