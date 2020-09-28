@@ -1,0 +1,6 @@
+.coverage
+.mypy_cache/
+build/
+dist/
+scrape_schema_recipe.egg-info/
+scraple_schema_recipe/__pycache__/

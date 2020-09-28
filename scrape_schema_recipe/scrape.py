@@ -35,8 +35,7 @@ __version__ = (_PACKAGE_PATH / 'VERSION').read_text().strip()
 
 
 # Follow RFC 7231 sec. 5.5.3
-USER_AGENT_STR = 'scrape-schema-recipe/{} requests/{}'.format(
-                                            __version__, requests.__version__)
+USER_AGENT_STR = f'scrape-schema-recipe/{__version__} requests/{requests.__version__}'
 
 
 def scrape(location: Union[str, IO[str]],
@@ -113,9 +112,8 @@ def scrape(location: Union[str, IO[str]],
         data = extruct.extract(location.read())
     else:
         raise TypeError(
-                  'location type "{}" is not a string for a url, filename, or '
-                  'text_string of the HTML, or a file-like object.'.format(
-                      type(location)))
+                  f'location type "{type(location)}" is not a string for a url, filename, or '
+                  f'text_string of the HTML, or a file-like object.')
 
     scrapings = _convert_to_scrapings(data, nonstandard_attrs, url=url)
 
@@ -181,8 +179,8 @@ def load(fp: Union[str, IO[str], Path],
         # Assume this is some kind of file-like object that can be read.
         data = extruct.extract(fp.read())
     else:
-        err_msg = 'expected, fp to be a filename, pathlib.Path object, ' \
-            'or a file-like object, fp is of type {}'.format(type(fp))
+        err_msg = f'expected, fp to be a filename, pathlib.Path object, ' \
+                  f'or a file-like object, fp is of type {type(fp)}'
         raise TypeError(err_msg)
 
     scrapings = _convert_to_scrapings(data, nonstandard_attrs)
@@ -238,8 +236,7 @@ def loads(string: str, python_objects: Union[bool, List, Tuple] = False,
     """
 
     if not isinstance(string, str):
-        raise TypeError('string is type "{}", a string was expected'
-                        ''.format(type(string)))
+        raise TypeError(f'string is type "{type(string)}", a string was expected')
 
     data = {}  # type: Dict[str, List[Dict]]
     data = extruct.extract(string)
@@ -302,8 +299,7 @@ def scrape_url(url: str, python_objects: Union[bool, List, Tuple] = False,
     """
 
     if not isinstance(url, str):
-        raise TypeError('url is type "{}", a string was expected'
-                        ''.format(type(url)))
+        raise TypeError(f'url is type "{type(url)}", a string was expected')
 
     data = {}  # type: Dict[str, List[Dict]]
     if not user_agent_str:

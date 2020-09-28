@@ -13,14 +13,14 @@ pip install scrape-schema-recipe
 
 ## Requirements
 
-Python version 3.5+
+Python version 3.6+
 
 This library relies heavily upon [extruct](https://github.com/scrapinghub/extruct).
 
 Other requirements: 
 * isodate (>=0.5.1)
 * requests
-* validators (>=12.4).
+* validators (>=12.4)
 
 ## Online Example
 
