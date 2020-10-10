@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 #
-# Copyright 2019 Micah Cochran
+# Copyright 2019-2020 Micah Cochran
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ from scrape_schema_recipe import load, loads, scrape, scrape_url
 from scrape_schema_recipe import example_output, __version__
 
 DISABLE_NETWORK_TESTS = False
-
+DATA_PATH = 'scrape_schema_recipe/test_data'
 
 def lists_are_equal(lst1: List, lst2: List) -> bool:
     lst1.sort()
@@ -43,7 +43,7 @@ def lists_are_equal(lst1: List, lst2: List) -> bool:
 class TestParsingFileMicroData(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.recipes = load('test_data/foodista-british-treacle-tart.html')
+        cls.recipes = load(f'{DATA_PATH}/foodista-british-treacle-tart.html')
         cls.recipe = cls.recipes[0]
 
     def test_recipe_keys(self):
@@ -68,7 +68,7 @@ class TestParsingFileMicroData(unittest.TestCase):
 class TestParsingFileMicroData2(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.recipes = scrape('test_data/sweetestkitchen-truffles.html',
+        cls.recipes = scrape(f'{DATA_PATH}/sweetestkitchen-truffles.html',
                              python_objects=True)
         cls.recipe = cls.recipes[0]
 
@@ -100,7 +100,7 @@ class TestParsingFileMicroData2(unittest.TestCase):
 class TestParsingFileLDJSON(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.recipes = scrape('test_data/bevvy-irish-coffee-2018.html')
+        cls.recipes = scrape(f'{DATA_PATH}/bevvy-irish-coffee-2018.html')
         cls.recipe = cls.recipes[0]
 
     def test_category(self):
@@ -142,7 +142,7 @@ class TestTimeDelta(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.recipes = scrape(
-                        'test_data/crumb-lemon-tea-cakes-2018.html',
+                        f'{DATA_PATH}/crumb-lemon-tea-cakes-2018.html',
                         python_objects=True)
         cls.recipe = cls.recipes[0]
 
@@ -158,7 +158,7 @@ class TestTimeDelta(unittest.TestCase):
 class TestDateTime(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.recipes = load('test_data/google-recipe-example.html',
+        cls.recipes = load(f'{DATA_PATH}/google-recipe-example.html',
                            python_objects=True)
         cls.recipe = cls.recipes[0]
 
@@ -183,7 +183,7 @@ class TestDateTime(unittest.TestCase):
 # test loads()
 class TestLoads(unittest.TestCase):
     def test_loads(self):
-        with open('test_data/bevvy-irish-coffee-2019.html') as fp:
+        with open(f'{DATA_PATH}/bevvy-irish-coffee-2019.html') as fp:
             s = fp.read()
 
         recipes = loads(s)
@@ -213,7 +213,7 @@ class BadTypes(unittest.TestCase):
 class TestURL(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.url = 'https://raw.githubusercontent.com/micahcochran/scrape-schema-recipe/master/test_data/bevvy-irish-coffee-2018.html'
+        cls.url = 'https://raw.githubusercontent.com/micahcochran/scrape-schema-recipe/master/scrape_schema_recipe/test_data/bevvy-irish-coffee-2018.html'
 
     @unittest.skipIf(DISABLE_NETWORK_TESTS is True, 'network tests disabled')
     def test_scrape_url(self):
@@ -236,7 +236,7 @@ class TestUnMigratedSchema(unittest.TestCase):
     # of ingredients in a recipe.
 
     def test_recipe1(self):
-        recipes = load('test_data/foodista-british-treacle-tart.html',
+        recipes = load(f'{DATA_PATH}/foodista-british-treacle-tart.html',
                        migrate_old_schema=False)
         recipe = recipes[0]
 
@@ -249,7 +249,7 @@ class TestUnMigratedSchema(unittest.TestCase):
         assert lists_are_equal(expectated_output, input_keys)
 
     def test_recipe2(self):
-        recipes = scrape('test_data/sweetestkitchen-truffles.html',
+        recipes = scrape(f'{DATA_PATH}/sweetestkitchen-truffles.html',
                          python_objects=True, migrate_old_schema=False)
         recipe = recipes[0]
 
@@ -307,9 +307,9 @@ class TestPythonObjects(unittest.TestCase):
 class TestGraph(unittest.TestCase):
     # tests @graph, also test Path
     def test_graph(self):
-        recipes_old = load('test_data/crumb-lemon-tea-cakes-2018.html',
+        recipes_old = load(f'{DATA_PATH}/crumb-lemon-tea-cakes-2018.html',
                            python_objects=True)
-        recipes_graph = load(Path('test_data/crumb-lemon-tea-cakes-2019.html'),
+        recipes_graph = load(Path(f'{DATA_PATH}/crumb-lemon-tea-cakes-2019.html'),
                              python_objects=True)
 
         r_old = recipes_old[0]

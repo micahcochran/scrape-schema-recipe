@@ -217,7 +217,7 @@ Test data attribution and licensing: [ATTRIBUTION.md](ATTRIBUTION.md)
 
 ## Development
 
-Unit testing can be run by:
+The unit testing must be run from a copy of the repository folder. Unit testing can be run by:
 ```
 schema-recipe-scraper$ python3 test_scrape.py
 ```

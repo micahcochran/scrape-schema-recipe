@@ -1,6 +1,6 @@
 # Test Data Attribution/Licenses
 
-Attribution for the test data (in the test_data/ folder) included in this python package.
+Attribution for the test data (in the `scrape_schema_recipe/test_data/` folder) included in this python package.
 These are input for testing the software package.
 
 I've tried to use recipes under Creative Commons Licenses that do not restrict derivation because

@@ -1,5 +1,6 @@
-setuptools >= 30.3.0
+setuptools >= 39.2.0
 extruct
+importlib_resources; python_version < '3.9'
 isodate >= 0.5.1
 requests
 validators >= 0.12.4

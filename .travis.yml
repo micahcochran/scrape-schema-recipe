@@ -9,7 +9,8 @@ matrix:
     - python: 3.8
     - python: "pypy3"
       env: RUN_MYPY=false
-    - python: 3.9-dev
+    - allow_failures:
+      - python: 3.9-dev
 
 
 install:
@@ -20,7 +21,7 @@ script:
   # test the static typing
   - if [ "$RUN_MYPY" = "true" ]; then mypy scrape_schema_recipe/scrape.py; fi
 
-  - python test_scrape.py
+  - python test_scrape.py -v
   # runs test and coverage
   # - python3 -m nose2
   # nose2 isn't working for some reason

@@ -1,12 +1,15 @@
 from .scrape import load
 
+from sys import version_info
+
+if version_info < (3, 9):
+    from importlib_resources import files 
+else:
+    from importlib.resources import files   # type: ignore
+
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
 
-# _PACKAGE_PATH = Path(os.path.dirname(os.path.abspath(__file__)))
-_PACKAGE_PATH = Path(__file__).resolve().parent
-
-_TEST_DATA_PATH = '../test_data/'
 
 example_names = ('irish-coffee', 'google', 'tart', 'tea-cake', 'truffles')
 
@@ -48,7 +51,7 @@ def example_output(name: str,
     if name not in example_names:
         raise(ValueError("no example named '{}'".format(name)))
 
-    return load(_PACKAGE_PATH / _TEST_DATA_PATH / _ex_name_filename[name],
+    return load(files(__package__) / 'test_data' / _ex_name_filename[name],
                 python_objects=python_objects,
                 nonstandard_attrs=nonstandard_attrs,
                 migrate_old_schema=migrate_old_schema)
