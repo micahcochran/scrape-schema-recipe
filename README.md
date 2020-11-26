@@ -1,6 +1,7 @@
 # scrape-schema-recipe
-
+[![PyPI](https://img.shields.io/pypi/v/scrape-schema-recipe)](https://pypi.org/project/scrape-schema-recipe/)
 [![Build Status](https://travis-ci.org/micahcochran/scrape-schema-recipe.svg?branch=master)](https://travis-ci.org/micahcochran/scrape-schema-recipe)
+[![Downloads](https://pepy.tech/badge/scrape-schema-recipe)](https://pepy.tech/project/scrape-schema-recipe)
 
 Scrapes recipes from HTML https://schema.org/Recipe (Microdata/JSON-LD) into Python dictionaries.
 
@@ -245,6 +246,6 @@ Here are some references for how schema.org/Recipe *should* be structured:
 ## Other Similar Python Libraries
 
 * [recipe_scrapers](https://github.com/hhursev/recipe-scrapers) - library scrapes
-recipes by using the HTML tags using BeautifulSoup.  It has drivers for each and every
-supported website.  This is a great fallback for when schema-recipe-scraper will not
-scrape a site.
+recipes by using extruct to scrape the schema.org/Recipe  format or HTML tags with BeautifulSoup.
+The library has drivers that support many different websites that further parse the information.
+This is a solid alternative to schema-recipe-scraper that is focused on a different kind of simplicity.
