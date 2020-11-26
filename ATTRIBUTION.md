@@ -12,44 +12,44 @@ These recipes and their HTML remain are licensed under their respective license,
 NOT the Apache 2.0 license that the software is licensed (except where noted).
 
 ### Irish Coffee Recipe
-File:       bevvy-irish-coffee.html
-Author:     Bevvy
-Recipe URL: https://bevvy.co/cocktail/irish-coffee/smq
-License:    [Creative Commons Attribution-ShareAlike 3.0 License](https://creativecommons.org/licenses/by-sa/3.0/)
-Website:    [Bevvy](https://bevvy.co/)
-Format:     LD-JSON
+* File:       bevvy-irish-coffee.html
+* Author:     Bevvy
+* Recipe URL: https://bevvy.co/cocktail/irish-coffee/smq
+* License:    [Creative Commons Attribution-ShareAlike 3.0 License](https://creativecommons.org/licenses/by-sa/3.0/)
+* Website:    [Bevvy](https://bevvy.co/)
+* Format:     LD-JSON
 
 
 ### British Treacle Tart
-File:		foodista-british-treacle-tart.html
-Creator:    [Leah Rodrigues](http://foodista.com/profile/XYPGHGF4/leah-rodrigues)
-Recipe URL: http://foodista.com/recipe/3LH62BBP/british-treacle-tart
-License:    [Creative Commons Attribution License](http://creativecommons.org/licenses/by/3.0/)
-Website:    [Foodista](http://foodista.com/)
-Format:     MicroData (note: this uses an older version of http://schema.org/Recipe)
+* File:		foodista-british-treacle-tart.html
+* Creator:	[Leah Rodrigues](http://foodista.com/profile/XYPGHGF4/leah-rodrigues)
+* Recipe URL:	http://foodista.com/recipe/3LH62BBP/british-treacle-tart
+* License:	[Creative Commons Attribution License](http://creativecommons.org/licenses/by/3.0/)
+* Website:	[Foodista](http://foodista.com/)
+* Format:	MicroData (note: this uses an older version of http://schema.org/Recipe)
 
 
 ### Rum & Tonka Bean Dark Chocolate Truffles 
-File:       sweetestkitchen-truffles.html
-Author:     [Jamieanne](http://www.sweetestkitchen.com/about/)
-Recipe URL: http://www.sweetestkitchen.com/2014/11/rum-tonka-bean-dark-chocolate-truffles/
-License:    [Creative Commons Attribution-NonCommercial 3.0 Unported License](http://creativecommons.org/licenses/by-nc/3.0/)
-Website:    [Sweetest Kitchen](http://www.sweetestkitchen.com/)
-Format:     Microdata (note: this uses an older version of http://schema.org/Recipe)
+* File:       sweetestkitchen-truffles.html
+* Author:     [Jamieanne](http://www.sweetestkitchen.com/about/)
+* Recipe URL: http://www.sweetestkitchen.com/2014/11/rum-tonka-bean-dark-chocolate-truffles/
+* License:    [Creative Commons Attribution-NonCommercial 3.0 Unported License](http://creativecommons.org/licenses/by-nc/3.0/)
+* Website:    [Sweetest Kitchen](http://www.sweetestkitchen.com/)
+* Format:     Microdata (note: this uses an older version of http://schema.org/Recipe)
 
 
 ### Meyer Lemon Poppyseed Tea Cakes
-File: 		crumb-meyer-lemon-poppyseed-tea-cakes.html
-Author:		[Isabell Boucher](http://www.crumbblog.com/about-isabelle/)
-Recipe URL: http://www.crumbblog.com/meyer-lemon-poppyseed-tea-cakes/
-License:    [Creative Commons Attribution-NonCommercial-ShareAlike 2.5 Canada License](http://creativecommons.org/licenses/by-nc-sa/2.5/ca/)
+* File:		crumb-meyer-lemon-poppyseed-tea-cakes.html
+* Author:	[Isabell Boucher](http://www.crumbblog.com/about-isabelle/)
+* Recipe URL:	http://www.crumbblog.com/meyer-lemon-poppyseed-tea-cakes/
+* License:	[Creative Commons Attribution-NonCommercial-ShareAlike 2.5 Canada License](http://creativecommons.org/licenses/by-nc-sa/2.5/ca/)
 from http://www.crumbblog.com/about-the-recipes/
-Website:	[Crumb](http://www.crumbblog.com/)
-Format:     LD-JSON
+* Website:	[Crumb](http://www.crumbblog.com/)
+* Format:	LD-JSON
 
 
 ### Google Example Party Cake
-File: google-recipe-example.html
-Recipe URL: https://developers.google.com/search/docs/data-types/recipe
-License: [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
-Format:     LD-JSON
+* File:		google-recipe-example.html
+* Recipe URL:	https://developers.google.com/search/docs/data-types/recipe
+* License:	[Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+* Format:	LD-JSON
