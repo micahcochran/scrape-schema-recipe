@@ -199,7 +199,7 @@ The `example_output()` function gives quick access to data for prototyping and d
 It accepts the same parameters as load(), but the first parameter, `name`, is different.
 
 ```python
->>> from scrape_schema_recipes import example_names, example_output
+>>> from scrape_schema_recipe import example_names, example_output
 
 >>> example_names
 ('irish-coffee', 'google', 'tart', 'tea-cake', 'truffles')
