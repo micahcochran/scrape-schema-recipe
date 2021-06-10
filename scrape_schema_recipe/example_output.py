@@ -11,10 +11,11 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Union
 
 
-example_names = ('irish-coffee', 'google', 'tart', 'tea-cake', 'truffles')
+example_names = ('irish-coffee', 'google', 'taco-salad', 'tart', 'tea-cake', 'truffles')
 
 _ex_name_filename = {'irish-coffee': 'bevvy-irish-coffee-2019.html',
                      'google': 'google-recipe-example.html',
+                     'taco-salad': 'mm-skinny-chicken-taco-salad.html',
                      'tart': 'foodista-british-treacle-tart.html',
                      'tea-cake': 'crumb-lemon-tea-cakes-2019.html',
                      'truffles': 'sweetestkitchen-truffles.html'}
