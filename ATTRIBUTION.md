@@ -53,3 +53,12 @@ from http://www.crumbblog.com/about-the-recipes/
 * Recipe URL:	https://developers.google.com/search/docs/data-types/recipe
 * License:	[Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 * Format:	LD-JSON
+
+
+### Chicken Taco Salad with Chili Lime Chicken
+* File:     mm-skinny-chicken-taco-salad.html
+* Author:   [Lauren](https://www.midgetmomma.com/about/about-midgetmomma/)
+* Recipe URL:  https://www.midgetmomma.com/skinny-chicken-taco-salad/
+* License:  [Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License](https://creativecommons.org/licenses/by-nc-sa/3.0/)
+* Website:  [Midget Momma](https://www.midgetmomma.com/)
+* Format:   LD-JSON

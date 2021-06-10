@@ -21,7 +21,6 @@ This library relies heavily upon [extruct](https://github.com/scrapinghub/extruc
 Other requirements: 
 * isodate (>=0.5.1)
 * requests
-* validators (>=12.4)
 
 ## Online Example
 
@@ -202,7 +201,7 @@ It accepts the same parameters as load(), but the first parameter, `name`, is di
 >>> from scrape_schema_recipe import example_names, example_output
 
 >>> example_names
-('irish-coffee', 'google', 'tart', 'tea-cake', 'truffles')
+('irish-coffee', 'google', 'taco-salad', 'tart', 'tea-cake', 'truffles')
 
 >>> recipes = example_output('truffles')
 >>> recipes[0]['name']

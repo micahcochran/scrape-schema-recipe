@@ -25,7 +25,6 @@ from typing import Callable, Dict, IO, List, Optional, Tuple, Union
 import extruct
 import isodate
 import requests
-import validators
 
 
 _PACKAGE_PATH = Path(__file__).resolve().parent
@@ -94,7 +93,7 @@ def scrape(location: Union[str, IO[str]],
     url = None
     if isinstance(location, str):
         # Is this a url?
-        if validators.url(location):
+        if location.startswith(("http://", "https://")):
             return scrape_url(location, python_objects=python_objects,
                               nonstandard_attrs=nonstandard_attrs,
                               user_agent_str=user_agent_str)
@@ -305,7 +304,7 @@ def scrape_url(url: str, python_objects: Union[bool, List, Tuple] = False,
     if not user_agent_str:
         user_agent_str = USER_AGENT_STR
 
-    r = requests.get(url, headers={'User-Agent': user_agent_str})
+    r = requests.get(url, headers={"User-Agent": user_agent_str}, timeout=5)
     r.raise_for_status()
     data = extruct.extract(r.text, r.url)
     url = r.url
