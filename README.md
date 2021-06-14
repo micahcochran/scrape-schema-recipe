@@ -1,6 +1,6 @@
 # scrape-schema-recipe
 [![PyPI](https://img.shields.io/pypi/v/scrape-schema-recipe)](https://pypi.org/project/scrape-schema-recipe/)
-[![Build Status](https://travis-ci.org/micahcochran/scrape-schema-recipe.svg?branch=master)](https://travis-ci.org/micahcochran/scrape-schema-recipe)
+![Build Status](https://github.com/micahcochran/scrape-schema-recipe/actions/workflows/python-package.yml/badge.svg)
 [![Downloads](https://pepy.tech/badge/scrape-schema-recipe)](https://pepy.tech/project/scrape-schema-recipe)
 
 Scrapes recipes from HTML https://schema.org/Recipe (Microdata/JSON-LD) into Python dictionaries.
