@@ -49,10 +49,10 @@ class TestParsingFileMicroData(unittest.TestCase):
     def test_recipe_keys(self):
         input_keys = list(self.recipe.keys())
 
-        expectated_output = ['@context', 'recipeYield', '@type',
-                             'recipeInstructions', 'recipeIngredient', 'name']
+        expected_output = ['@context', 'recipeYield', '@type',
+                           'recipeInstructions', 'recipeIngredient', 'name']
 
-        assert lists_are_equal(expectated_output, input_keys)
+        assert lists_are_equal(expected_output, input_keys)
 
     def test_name(self):
         assert self.recipe['name'] == 'British Treacle Tart'
@@ -62,6 +62,40 @@ class TestParsingFileMicroData(unittest.TestCase):
 
     def test_num_recipes(self):
         assert len(self.recipes) == 1
+
+
+class TestUnsetTimeDate(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.recipes = scrape(f'{DATA_PATH}/allrecipes-moscow-mule.html',
+                             python_objects=True)
+        cls.recipe = cls.recipes[0]
+
+    def test_recipe_keys(self):
+        input_keys = list(self.recipe.keys())
+
+        expected_output = [
+            '@context', '@type', 'aggregateRating', 'author', 'datePublished',
+            'description', 'image', 'mainEntityOfPage', 'name', 'nutrition',
+            'prepTime', 'recipeCategory', 'recipeCuisine', 'recipeIngredient',
+            'recipeInstructions', 'recipeYield', 'review', 'totalTime', 'video'
+        ]
+
+        assert lists_are_equal(expected_output, input_keys)
+
+    def test_name(self):
+        assert self.recipe['name'] == 'Simple Moscow Mule'
+
+    def test_recipe_yield(self):
+        assert self.recipe['recipeYield'] == '1 cocktail'
+
+    def test_num_recipes(self):
+        assert len(self.recipes) == 1
+
+    def test_recipe_durations(self):
+        assert str(self.recipe['prepTime']) == '0:10:00'
+        assert str(self.recipe['totalTime']) == '0:10:00'
+        assert 'cookTime' not in self.recipe.keys()
 
 
 # also uses the old ingredients name

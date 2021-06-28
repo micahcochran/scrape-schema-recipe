@@ -453,11 +453,12 @@ def _convert_properties_scrape(recipes: List[Dict], properties: frozenset,
     for i in range(len(recipes)):
         key_set = set(recipes[i].keys())
         for p in key_set.intersection(properties):
-                try:
-                    recipes[i][p] = function(recipes[i][p])
-                except (isodate.ISO8601Error, ValueError, TypeError):
-                    # parse error, just leave the value as is
-                    pass
+            try:
+                recipes[i][p] = function(recipes[i][p])
+            except (isodate.ISO8601Error, ValueError, TypeError):
+                if recipes[i][p] is None:  # TypeError
+                    recipes[i].pop(p)
+                # otherwise, it's a parse error, just leave the value as is
 
     return recipes
 
