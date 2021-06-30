@@ -62,3 +62,11 @@ from http://www.crumbblog.com/about-the-recipes/
 * License:  [Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License](https://creativecommons.org/licenses/by-nc-sa/3.0/)
 * Website:  [Midget Momma](https://www.midgetmomma.com/)
 * Format:   LD-JSON
+
+### Simple Moscow Mule
+* File:	      allrecipes-moscow-mule.html
+* Author:     [Lorem Ipsum](https://www.allrecipes.com/cook/loremipsum/)
+* Recipe URL: https://www.allrecipes.com/recipe/237874/simple-moscow-mule/
+* License:    
+* Website:    [All Recipes](https://www.allrecipes.com/)
+* Format:     LD-JSON
