@@ -4,12 +4,16 @@ Attribution for the test data (in the `scrape_schema_recipe/test_data/` folder) 
 These are input for testing the software package.
 
 I've tried to use recipes under Creative Commons Licenses that do not restrict derivation because
-a unit test case could be considerred a derivation.
+a unit test case could be considered a derivation.
 I've sparingly using recipes that are licensed non-commercial.  I think unit testing
 could constitute as a use that would not conflict with that.
 
 These recipes and their HTML remain are licensed under their respective license, 
 NOT the Apache 2.0 license that the software is licensed (except where noted).
+
+
+## Examples
+
 
 ### Irish Coffee Recipe
 * File:       bevvy-irish-coffee.html
@@ -63,10 +67,21 @@ from http://www.crumbblog.com/about-the-recipes/
 * Website:  [Midget Momma](https://www.midgetmomma.com/)
 * Format:   LD-JSON
 
+### Flavorful Green Beans
+* File:         flavorful-green-beans.html
+* Author:       National Heart, Lung, and Blood Institute
+* Recipe URL:   https://medlineplus.gov/recipes/flavorful-green-beans/
+* License:      [Public Domain](https://medlineplus.gov/about/using/usingcontent/)
+* Website:      [MedlinePlus](https://medlineplus.gov/)
+
+
+## Unit Tests
+
+
 ### Simple Moscow Mule
 * File:	      allrecipes-moscow-mule.html
 * Author:     [Lorem Ipsum](https://www.allrecipes.com/cook/loremipsum/)
 * Recipe URL: https://www.allrecipes.com/recipe/237874/simple-moscow-mule/
-* License:    
+* License:    Proprietary
 * Website:    [All Recipes](https://www.allrecipes.com/)
 * Format:     LD-JSON
