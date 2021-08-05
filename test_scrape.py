@@ -23,42 +23,49 @@ import unittest
 from pathlib import Path
 from typing import List
 
-from scrape_schema_recipe import load, loads, scrape, scrape_url
+from scrape_schema_recipe import load, loads, scrape, scrape_url, SSRTypeError
 from scrape_schema_recipe import example_output, __version__
 
 DISABLE_NETWORK_TESTS = False
-DATA_PATH = 'scrape_schema_recipe/test_data'
+DATA_PATH = "scrape_schema_recipe/test_data"
+
 
 def lists_are_equal(lst1: List, lst2: List) -> bool:
     lst1.sort()
     lst2.sort()
 
     if lst1 != lst2:
-        print('\n[lst1 != lst2]')
-        print('lst1: {}'.format(lst1))
-        print('lst2: {}'.format(lst2))
+        print("\n[lst1 != lst2]")
+        print("lst1: {}".format(lst1))
+        print("lst2: {}".format(lst2))
     return lst1 == lst2
 
 
 class TestParsingFileMicroData(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.recipes = load(f'{DATA_PATH}/foodista-british-treacle-tart.html')
+        cls.recipes = load(f"{DATA_PATH}/foodista-british-treacle-tart.html")
         cls.recipe = cls.recipes[0]
 
     def test_recipe_keys(self):
         input_keys = list(self.recipe.keys())
 
-        expected_output = ['@context', 'recipeYield', '@type',
-                           'recipeInstructions', 'recipeIngredient', 'name']
+        expected_output = [
+            "@context",
+            "recipeYield",
+            "@type",
+            "recipeInstructions",
+            "recipeIngredient",
+            "name",
+        ]
 
         assert lists_are_equal(expected_output, input_keys)
 
     def test_name(self):
-        assert self.recipe['name'] == 'British Treacle Tart'
+        assert self.recipe["name"] == "British Treacle Tart"
 
     def test_recipe_yield(self):
-        assert self.recipe['recipeYield'] == '1 servings'
+        assert self.recipe["recipeYield"] == "1 servings"
 
     def test_num_recipes(self):
         assert len(self.recipes) == 1
@@ -67,106 +74,146 @@ class TestParsingFileMicroData(unittest.TestCase):
 class TestUnsetTimeDate(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.recipes = scrape(f'{DATA_PATH}/allrecipes-moscow-mule.html',
-                             python_objects=True)
+        cls.recipes = scrape(
+            f"{DATA_PATH}/allrecipes-moscow-mule.html", python_objects=True
+        )
         cls.recipe = cls.recipes[0]
 
     def test_recipe_keys(self):
         input_keys = list(self.recipe.keys())
 
         expected_output = [
-            '@context', '@type', 'aggregateRating', 'author', 'datePublished',
-            'description', 'image', 'mainEntityOfPage', 'name', 'nutrition',
-            'prepTime', 'recipeCategory', 'recipeCuisine', 'recipeIngredient',
-            'recipeInstructions', 'recipeYield', 'review', 'totalTime', 'video'
+            "@context",
+            "@type",
+            "aggregateRating",
+            "author",
+            "datePublished",
+            "description",
+            "image",
+            "mainEntityOfPage",
+            "name",
+            "nutrition",
+            "prepTime",
+            "recipeCategory",
+            "recipeCuisine",
+            "recipeIngredient",
+            "recipeInstructions",
+            "recipeYield",
+            "review",
+            "totalTime",
+            "video",
         ]
 
         assert lists_are_equal(expected_output, input_keys)
 
     def test_name(self):
-        assert self.recipe['name'] == 'Simple Moscow Mule'
+        assert self.recipe["name"] == "Simple Moscow Mule"
 
     def test_recipe_yield(self):
-        assert self.recipe['recipeYield'] == '1 cocktail'
+        assert self.recipe["recipeYield"] == "1 cocktail"
 
     def test_num_recipes(self):
         assert len(self.recipes) == 1
 
     def test_recipe_durations(self):
-        assert str(self.recipe['prepTime']) == '0:10:00'
-        assert str(self.recipe['totalTime']) == '0:10:00'
-        assert 'cookTime' not in self.recipe.keys()
+        assert str(self.recipe["prepTime"]) == "0:10:00"
+        assert str(self.recipe["totalTime"]) == "0:10:00"
+        assert "cookTime" not in self.recipe.keys()
 
 
 # also uses the old ingredients name
 class TestParsingFileMicroData2(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.recipes = scrape(f'{DATA_PATH}/sweetestkitchen-truffles.html',
-                             python_objects=True)
+        cls.recipes = scrape(
+            f"{DATA_PATH}/sweetestkitchen-truffles.html", python_objects=True
+        )
         cls.recipe = cls.recipes[0]
 
     def test_recipe_keys(self):
         input_keys = list(self.recipe.keys())
 
-        expectated_output = ['prepTime', 'cookTime', 'name', 'recipeYield',
-                             'recipeCategory', 'image', 'description', '@type',
-                             'author', 'aggregateRating', 'recipeIngredient',
-                             'recipeInstructions', 'totalTime', '@context']
+        expected_output = [
+            "prepTime",
+            "cookTime",
+            "name",
+            "recipeYield",
+            "recipeCategory",
+            "image",
+            "description",
+            "@type",
+            "author",
+            "aggregateRating",
+            "recipeIngredient",
+            "recipeInstructions",
+            "totalTime",
+            "@context",
+        ]
 
-        assert lists_are_equal(expectated_output, input_keys)
+        assert lists_are_equal(expected_output, input_keys)
 
     def test_name(self):
-        assert self.recipe['name'] \
-            == 'Rum & Tonka Bean Dark Chocolate Truffles'
+        assert self.recipe["name"] == "Rum & Tonka Bean Dark Chocolate Truffles"
 
     def test_recipe_yield(self):
-        assert self.recipe['recipeYield'] == '15-18 3cm squares'
+        assert self.recipe["recipeYield"] == "15-18 3cm squares"
 
     def test_num_recipes(self):
         assert len(self.recipes) == 1
 
     def test_totalTime_sum(self):
         r = self.recipe
-        assert r['prepTime'] + r['cookTime'] == r['totalTime']
+        assert r["prepTime"] + r["cookTime"] == r["totalTime"]
 
 
 class TestParsingFileLDJSON(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.recipes = scrape(f'{DATA_PATH}/bevvy-irish-coffee-2018.html')
+        cls.recipes = scrape(f"{DATA_PATH}/bevvy-irish-coffee-2018.html")
         cls.recipe = cls.recipes[0]
 
     def test_category(self):
-        assert self.recipe['recipeCategory'] == 'Cocktail'
+        assert self.recipe["recipeCategory"] == "Cocktail"
 
     def test_duration(self):
-        assert self.recipe['totalTime'] == 'PT5M'
+        assert self.recipe["totalTime"] == "PT5M"
 
     def test_ingredients(self):
-        ingredients = ['1.5 oz Irish whiskey',
-                       '1 tsp brown sugar syrup',
-                       'Hot black coffee',
-                       'Unsweetened whipped cream']
+        ingredients = [
+            "1.5 oz Irish whiskey",
+            "1 tsp brown sugar syrup",
+            "Hot black coffee",
+            "Unsweetened whipped cream",
+        ]
 
-        assert lists_are_equal(ingredients, self.recipe['recipeIngredient'])
+        assert lists_are_equal(ingredients, self.recipe["recipeIngredient"])
 
     # in the 2019 version this was changed
     def test_instructions(self):
-        expected_str = 'Add Irish whiskey, brown sugar syrup, and hot coffee to an Irish coffee mug.\nTop with whipped cream.'
+        expected_str = "Add Irish whiskey, brown sugar syrup, and hot coffee to an Irish coffee mug.\nTop with whipped cream."
 
-        assert self.recipe['recipeInstructions'] == expected_str
+        assert self.recipe["recipeInstructions"] == expected_str
 
     def test_recipe_keys(self):
         input_keys = list(self.recipe.keys())
-        expected_output = ['author', 'publisher', 'recipeCategory', '@type',
-                           'recipeIngredient', 'recipeInstructions', 'image',
-                           '@context', 'totalTime', 'description', 'name']
+        expected_output = [
+            "author",
+            "publisher",
+            "recipeCategory",
+            "@type",
+            "recipeIngredient",
+            "recipeInstructions",
+            "image",
+            "@context",
+            "totalTime",
+            "description",
+            "name",
+        ]
 
         assert lists_are_equal(expected_output, input_keys)
 
     def test_name(self):
-        assert self.recipe['name'] == 'Irish Coffee'
+        assert self.recipe["name"] == "Irish Coffee"
 
     def test_num_recipes(self):
         assert len(self.recipes) == 1
@@ -176,32 +223,33 @@ class TestTimeDelta(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.recipes = scrape(
-                        f'{DATA_PATH}/crumb-lemon-tea-cakes-2018.html',
-                        python_objects=True)
+            f"{DATA_PATH}/crumb-lemon-tea-cakes-2018.html", python_objects=True
+        )
         cls.recipe = cls.recipes[0]
 
     def test_timedelta(self):
         td = datetime.timedelta(minutes=10)
-        assert self.recipe['prepTime'] == td
+        assert self.recipe["prepTime"] == td
 
     def test_totalTime_sum(self):
         r = self.recipe
-        assert r['prepTime'] + r['cookTime'] == r['totalTime']
+        assert r["prepTime"] + r["cookTime"] == r["totalTime"]
 
 
 class TestDateTime(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.recipes = load(f'{DATA_PATH}/google-recipe-example.html',
-                           python_objects=True)
+        cls.recipes = load(
+            f"{DATA_PATH}/google-recipe-example.html", python_objects=True
+        )
         cls.recipe = cls.recipes[0]
 
         # input string (upload_date) is "2018-02-05T08:00:00+08:00"
-        upload_date = cls.recipe['video'][0]['uploadDate']
+        upload_date = cls.recipe["video"][0]["uploadDate"]
         cls.datetime_test = isodate.parse_datetime(upload_date)
 
     def test_publish_date_python_obj(self):
-        assert self.recipe['datePublished'] == datetime.date(2018, 3, 10)
+        assert self.recipe["datePublished"] == datetime.date(2018, 3, 10)
 
     def test_datetime_tz_python_obj_isodate(self):
         tz8 = isodate.FixedOffset(offset_hours=8)
@@ -217,90 +265,112 @@ class TestDateTime(unittest.TestCase):
 # test loads()
 class TestLoads(unittest.TestCase):
     def test_loads(self):
-        with open(f'{DATA_PATH}/bevvy-irish-coffee-2019.html') as fp:
+        with open(f"{DATA_PATH}/bevvy-irish-coffee-2019.html") as fp:
             s = fp.read()
 
         recipes = loads(s)
         recipe = recipes[0]
-        assert recipe['name'] == 'Irish Coffee'
+        assert recipe["name"] == "Irish Coffee"
 
 
-# feed bad types into the fuctions
+# feed bad types into the functions
 class BadTypes(unittest.TestCase):
     def test_load(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(SSRTypeError):
             load(0xFEED)
 
     def test_loads(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(SSRTypeError):
             loads(0xDEADBEEF)
 
     def test_scrape(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(SSRTypeError):
             scrape(0xBEE)
 
     def test_scrape_url(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(SSRTypeError):
             scrape_url(0xC0FFEE)
 
 
 class TestURL(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.url = 'https://raw.githubusercontent.com/micahcochran/scrape-schema-recipe/master/scrape_schema_recipe/test_data/bevvy-irish-coffee-2018.html'
+        cls.url = "https://raw.githubusercontent.com/micahcochran/scrape-schema-recipe/master/scrape_schema_recipe/test_data/bevvy-irish-coffee-2018.html"
 
-    @unittest.skipIf(DISABLE_NETWORK_TESTS is True, 'network tests disabled')
+    @unittest.skipIf(DISABLE_NETWORK_TESTS is True, "network tests disabled")
     def test_scrape_url(self):
         self.recipes = scrape_url(self.url)
         self.recipe = self.recipes[0]
-        assert self.recipe['name'] == 'Irish Coffee'
+        assert self.recipe["name"] == "Irish Coffee"
 
-    @unittest.skipIf(DISABLE_NETWORK_TESTS is True, 'network tests disabled')
+    @unittest.skipIf(DISABLE_NETWORK_TESTS is True, "network tests disabled")
     def test_scrape(self):
         self.recipes = scrape(self.url)
         self.recipe = self.recipes[0]
-        assert self.recipe['name'] == 'Irish Coffee'
+        assert self.recipe["name"] == "Irish Coffee"
 
 
-# test that the schema still works unmigrated
+# test that the schema still works when not migrated
 class TestUnMigratedSchema(unittest.TestCase):
 
-    # Some of these examples use 'ingredients', which was superceeded by
+    # Some of these examples use 'ingredients', which was superceded by
     # 'recipeIngredients' in the http://schema.org/Recipe standard for a list
     # of ingredients in a recipe.
 
     def test_recipe1(self):
-        recipes = load(f'{DATA_PATH}/foodista-british-treacle-tart.html',
-                       migrate_old_schema=False)
+        recipes = load(
+            f"{DATA_PATH}/foodista-british-treacle-tart.html", migrate_old_schema=False
+        )
         recipe = recipes[0]
 
         input_keys = list(recipe.keys())
-        # Note: 'ingredients' has been superceeded by 'recipeIngredients' in
+        # Note: 'ingredients' has been superceded by 'recipeIngredients' in
         # the http://schema.org/Recipe standard for a list of ingredients.
-        expectated_output = ['@context', 'recipeYield', '@type',
-                             'recipeInstructions', 'ingredients', 'name']
+        expected_output = [
+            "@context",
+            "recipeYield",
+            "@type",
+            "recipeInstructions",
+            "ingredients",
+            "name",
+        ]
 
-        assert lists_are_equal(expectated_output, input_keys)
+        assert lists_are_equal(expected_output, input_keys)
 
     def test_recipe2(self):
-        recipes = scrape(f'{DATA_PATH}/sweetestkitchen-truffles.html',
-                         python_objects=True, migrate_old_schema=False)
+        recipes = scrape(
+            f"{DATA_PATH}/sweetestkitchen-truffles.html",
+            python_objects=True,
+            migrate_old_schema=False,
+        )
         recipe = recipes[0]
 
         input_keys = list(recipe.keys())
 
-        expectated_output = ['prepTime', 'cookTime', 'name', 'recipeYield',
-                             'recipeCategory', 'image', 'description', '@type',
-                             'author', 'aggregateRating', 'ingredients',
-                             'recipeInstructions', 'totalTime', '@context']
+        expected_output = [
+            "prepTime",
+            "cookTime",
+            "name",
+            "recipeYield",
+            "recipeCategory",
+            "image",
+            "description",
+            "@type",
+            "author",
+            "aggregateRating",
+            "ingredients",
+            "recipeInstructions",
+            "totalTime",
+            "@context",
+        ]
 
-        assert lists_are_equal(expectated_output, input_keys)
+        assert lists_are_equal(expected_output, input_keys)
 
 
 class TestExampleOutput(unittest.TestCase):
     def test_example_output(self):
-        name = example_output('tea-cake')[0]['name']
-        assert name == 'Meyer Lemon Poppyseed Tea Cakes'
+        name = example_output("tea-cake")[0]["name"]
+        assert name == "Meyer Lemon Poppyseed Tea Cakes"
 
 
 class TestVersion(unittest.TestCase):
@@ -315,55 +385,57 @@ class TestPythonObjects(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # these are named based on what is passed via python_objects
-        cls.true = example_output('google', python_objects=True)[0]
-        cls.false = example_output('google', python_objects=False)[0]
-        cls.duration = example_output('google', python_objects=[datetime.timedelta])[0]
-        cls.dates = example_output('google', python_objects=[datetime.date])[0]
+        cls.true = example_output("google", python_objects=True)[0]
+        cls.false = example_output("google", python_objects=False)[0]
+        cls.duration = example_output("google", python_objects=[datetime.timedelta])[0]
+        cls.dates = example_output("google", python_objects=[datetime.date])[0]
 
     def testDurationTypes(self):
-        assert isinstance(self.duration['cookTime'], datetime.timedelta)
-        assert isinstance(self.duration['prepTime'], datetime.timedelta)
-        assert isinstance(self.duration['totalTime'], datetime.timedelta)
+        assert isinstance(self.duration["cookTime"], datetime.timedelta)
+        assert isinstance(self.duration["prepTime"], datetime.timedelta)
+        assert isinstance(self.duration["totalTime"], datetime.timedelta)
 
     def testDurationEqual(self):
-        assert self.duration['cookTime'] == self.true['cookTime']
-        assert self.duration['prepTime'] == self.true['prepTime']
-        assert self.duration['totalTime'] == self.true['totalTime']
+        assert self.duration["cookTime"] == self.true["cookTime"]
+        assert self.duration["prepTime"] == self.true["prepTime"]
+        assert self.duration["totalTime"] == self.true["totalTime"]
 
     def testDateTypes(self):
-        assert isinstance(self.dates['datePublished'], datetime.date)
+        assert isinstance(self.dates["datePublished"], datetime.date)
         # note that datePublished can also be of type datetime.dateime
 
     def testDatesEqual(self):
-        assert self.dates['datePublished'] == self.true['datePublished']
+        assert self.dates["datePublished"] == self.true["datePublished"]
 
 
 class TestGraph(unittest.TestCase):
     # tests @graph, also test Path
     def test_graph(self):
-        recipes_old = load(f'{DATA_PATH}/crumb-lemon-tea-cakes-2018.html',
-                           python_objects=True)
-        recipes_graph = load(Path(f'{DATA_PATH}/crumb-lemon-tea-cakes-2019.html'),
-                             python_objects=True)
+        recipes_old = load(
+            f"{DATA_PATH}/crumb-lemon-tea-cakes-2018.html", python_objects=True
+        )
+        recipes_graph = load(
+            Path(f"{DATA_PATH}/crumb-lemon-tea-cakes-2019.html"), python_objects=True
+        )
 
         r_old = recipes_old[0]
         r_graph = recipes_graph[0]
 
-        assert r_old['name'] == r_graph['name']
-        assert r_old['recipeCategory'] == r_graph['recipeCategory']
-        assert r_old['recipeCuisine'] == r_graph['recipeCuisine']
-        assert r_old['recipeIngredient'] == r_graph['recipeIngredient']
-        assert r_old['recipeYield'] == r_graph['recipeYield']
-        assert r_old['totalTime'] == r_graph['totalTime']
+        assert r_old["name"] == r_graph["name"]
+        assert r_old["recipeCategory"] == r_graph["recipeCategory"]
+        assert r_old["recipeCuisine"] == r_graph["recipeCuisine"]
+        assert r_old["recipeIngredient"] == r_graph["recipeIngredient"]
+        assert r_old["recipeYield"] == r_graph["recipeYield"]
+        assert r_old["totalTime"] == r_graph["totalTime"]
 
         # ---- check differences ----
         # the recipeInstructions in 2019 version are HowToStep format, 2018 version are in a list
-        assert r_old['recipeInstructions'] != r_graph['recipeInstructions']
+        assert r_old["recipeInstructions"] != r_graph["recipeInstructions"]
 
         # 2019 has a datePublished, 2018 version does not
-        r_graph['datePublished'] == datetime.date(2018, 3, 19)
-        assert 'datePublished' not in r_old.keys()
+        r_graph["datePublished"] == datetime.date(2018, 3, 19)
+        assert "datePublished" not in r_old.keys()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -1,5 +1,5 @@
 #
-# Copyright 2019 Micah Cochran
+# Copyright 2019-2021 Micah Cochran
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,14 +14,15 @@
 # limitations under the License.
 #
 
-# internal libs
+# internal libraries
+from dataclasses import dataclass
 import datetime
 from pathlib import Path
 import sys
 # for mypy
 from typing import Callable, Dict, IO, List, Optional, Tuple, Union
 
-# external libs
+# external libraries
 import extruct
 import isodate
 import requests
@@ -35,6 +36,19 @@ __version__ = (_PACKAGE_PATH / 'VERSION').read_text().strip()
 
 # Follow RFC 7231 sec. 5.5.3
 USER_AGENT_STR = f'scrape-schema-recipe/{__version__} requests/{requests.__version__}'
+
+
+@dataclass
+class SSRTypeError(TypeError):
+    """Custom error that is raised when the input given is not of the correct type."""
+    var_name: str
+    object_type: type
+    expected_types: str
+    
+    def __str__(self):
+        s = f'{self.var_name} is of type "{self.object_type.__name__}", when expecting one of the following type(s): {self.expected_types}'
+
+        return s
 
 
 def scrape(location: Union[str, IO[str]],
@@ -110,9 +124,9 @@ def scrape(location: Union[str, IO[str]],
         # Assume this is some kind of file-like object that can be read.
         data = extruct.extract(location.read())
     else:
-        raise TypeError(
-                  f'location type "{type(location)}" is not a string for a url, filename, or '
-                  f'text_string of the HTML, or a file-like object.')
+        raise SSRTypeError(var_name="location", 
+                           object_type=type(location), 
+                           expected_types = "string for a url, filename, or text_string of the HTML, or a file-like object")
 
     scrapings = _convert_to_scrapings(data, nonstandard_attrs, url=url)
 
@@ -178,9 +192,9 @@ def load(fp: Union[str, IO[str], Path],
         # Assume this is some kind of file-like object that can be read.
         data = extruct.extract(fp.read())
     else:
-        err_msg = f'expected, fp to be a filename, pathlib.Path object, ' \
-                  f'or a file-like object, fp is of type {type(fp)}'
-        raise TypeError(err_msg)
+        raise SSRTypeError(var_name="fp", 
+                           object_type=type(fp), 
+                           expected_types="a filename, pathlib.Path object, or a file-like object")
 
     scrapings = _convert_to_scrapings(data, nonstandard_attrs)
 
@@ -235,7 +249,8 @@ def loads(string: str, python_objects: Union[bool, List, Tuple] = False,
     """
 
     if not isinstance(string, str):
-        raise TypeError(f'string is type "{type(string)}", a string was expected')
+        raise SSRTypeError(var_name="string", object_type=type(string), expected_types="string")
+
 
     data = {}  # type: Dict[str, List[Dict]]
     data = extruct.extract(string)
@@ -298,9 +313,10 @@ def scrape_url(url: str, python_objects: Union[bool, List, Tuple] = False,
     """
 
     if not isinstance(url, str):
-        raise TypeError(f'url is type "{type(url)}", a string was expected')
+        raise SSRTypeError(var_name="url", object_type=type(url), expected_types="string")
 
-    data = {}  # type: Dict[str, List[Dict]]
+
+    data: Dict[str, List[Dict]] = {}
     if not user_agent_str:
         user_agent_str = USER_AGENT_STR
 
@@ -341,7 +357,7 @@ def _convert_json_ld_recipe(rec: Dict,
 def _convert_to_scrapings(data: Dict[str, List[Dict]],
                           nonstandard_attrs: bool = False,
                           url: str = None) -> List[Dict]:
-    """dectects schema.org/Recipe content and extracts it"""
+    """dectects schema.org/Recipe content in the dictionary and extracts it"""
     out = []
     if data['json-ld'] != []:
         for rec in data['json-ld']:
