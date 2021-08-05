@@ -14,5 +14,5 @@
 # limitations under the License.
 #
 
-from .scrape import __version__, load, loads, scrape, scrape_url
+from .scrape import __version__, load, loads, scrape, scrape_url, SSRTypeError
 from .example_output import example_names, example_output

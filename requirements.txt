@@ -1,4 +1,5 @@
 setuptools >= 39.2.0
+dataclasses; python_version < '3.7'
 extruct
 importlib_resources; python_version < '3.9'
 isodate >= 0.5.1
