@@ -1,5 +1,5 @@
 #
-# Copyright 2019-2021 Micah Cochran
+# Copyright 2019-2023 Micah Cochran
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 # internal libraries
 from dataclasses import dataclass
 import datetime
+import html
 from pathlib import Path
 import sys
 # for mypy
@@ -133,6 +134,8 @@ def scrape(location: Union[str, IO[str]],
     if migrate_old_schema is True:
         scrapings = _migrate_old_schema(scrapings)
 
+    scrapings = [_unescape_content(s) for s in scrapings]
+
     if python_objects is not False:
         scrapings = _pythonize_objects(scrapings, python_objects)
 
@@ -201,6 +204,8 @@ def load(fp: Union[str, IO[str], Path],
     if migrate_old_schema is True:
         scrapings = _migrate_old_schema(scrapings)
 
+    scrapings = [_unescape_content(s) for s in scrapings]
+
     if python_objects is not False:
         scrapings = _pythonize_objects(scrapings, python_objects)
 
@@ -258,6 +263,8 @@ def loads(string: str, python_objects: Union[bool, List, Tuple] = False,
 
     if migrate_old_schema is True:
         scrapings = _migrate_old_schema(scrapings)
+
+    scrapings = [_unescape_content(s) for s in scrapings]
 
     if python_objects is not False:
         scrapings = _pythonize_objects(scrapings, python_objects)
@@ -329,6 +336,8 @@ def scrape_url(url: str, python_objects: Union[bool, List, Tuple] = False,
 
     if migrate_old_schema is True:
         scrapings = _migrate_old_schema(scrapings)
+
+    scrapings = [_unescape_content(s) for s in scrapings]
 
     if python_objects is not False:
         scrapings = _pythonize_objects(scrapings, python_objects)
@@ -487,3 +496,39 @@ def _migrate_old_schema(recipes: List[Dict]) -> List[Dict]:
             recipes[i]['recipeIngredient'] = recipes[i].pop('ingredients')
 
     return recipes
+
+
+def _unescape_content(recipe: Dict) -> Dict:
+    """Replace escape codes in HTML to the actual character from text content"""
+
+    new_rec = {}
+
+    def html_unescape_string(v):
+        if isinstance(v, str):
+            return html.unescape(v)
+        return v
+
+    # this loops through most of the content an runs the html.unescape function on values
+    for key, value in recipe.items():
+        if isinstance(value, str):
+            new_rec[key] = html.unescape(value)
+        elif isinstance(value, dict):
+            new_rec[key] = {k: html_unescape_string(v) for k, v in value.items() if v}
+        elif isinstance(value, list):
+
+            # value is empty, skip the key
+            if value == [] or value is None or value == "":
+                pass
+            # a list of dictionaries
+            elif len(value) > 0 and isinstance(value[0], dict):
+                new_rec[key] = [
+                    {k: html.unescape(v) for k, v in d_row.items() if v}
+                    for d_row in value
+                ]
+
+            elif len(value) > 0 and isinstance(value[0], str):
+                new_rec[key] = [html.unescape(item) for item in value]
+            else:
+                raise TypeError(f"=== Dunno 2: choaked on {value}")
+        
+    return new_rec

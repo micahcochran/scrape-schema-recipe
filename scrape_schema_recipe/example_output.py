@@ -11,13 +11,16 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Union
 
 
-_ex_name_filename = {'irish-coffee': 'bevvy-irish-coffee-2019.html',
-                     'google': 'google-recipe-example.html',
-                     'green-beans': 'flavorful-green-beans.html',
-                     'taco-salad': 'mm-skinny-chicken-taco-salad.html',
-                     'tart': 'foodista-british-treacle-tart.html',
-                     'tea-cake': 'crumb-lemon-tea-cakes-2019.html',
-                     'truffles': 'sweetestkitchen-truffles.html'}
+_ex_name_filename = {
+    "carrot-fennel-soup": "histfriendly-carrot-fennel-soup.html",
+    "google": "google-recipe-example.html",
+    "green-beans": "flavorful-green-beans.html",
+    "irish-coffee": "bevvy-irish-coffee-2019.html",
+    "taco-salad": "mm-skinny-chicken-taco-salad.html",
+    "tart": "foodista-british-treacle-tart.html",
+    "tea-cake": "crumb-lemon-tea-cakes-2019.html",
+    "truffles": "sweetestkitchen-truffles.html",
+}
 
 example_names = tuple(_ex_name_filename.keys())
 

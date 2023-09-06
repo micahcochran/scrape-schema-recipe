@@ -75,6 +75,14 @@ from http://www.crumbblog.com/about-the-recipes/
 * Website:      [MedlinePlus](https://medlineplus.gov/)
 
 
+### Anti-inflammatory Carrot & Fennel Soup
+* File:         [histfriendly-carrot-fennel-soup.html](scrape_schema_recipe/test_data/histfriendly-carrot-fennel-soup.html)
+* Author:       [Tania Surrow Larsen](https://histaminefriendlykitchen.com/about-me/)
+* Recipe URL:   https://histaminefriendlykitchen.com/anti-inflammatory-carrot-fennel-soup/
+* License:      [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-nc-sa/4.0/)
+* Website:      [The Histimine Friendly Kitchen](https://histaminefriendlykitchen.com/)
+* Format:       LD-JSON
+
 ## Unit Tests
 
 
@@ -85,3 +93,12 @@ from http://www.crumbblog.com/about-the-recipes/
 * License:    Proprietary
 * Website:    [All Recipes](https://www.allrecipes.com/)
 * Format:     LD-JSON
+
+
+### Coconut Cake
+* File:         [sally-coconut-cake.html](scrape_schema_recipe/test_data/sally-coconut-cake.html)
+* Author:       [Sally](https://sallysbakingaddiction.com/about/)
+* Recipe URL:   [Fluffy & Moist Coconut Cake](https://sallysbakingaddiction.com/coconut-cake/)
+* License:      Proprietary
+* Website:      [Sally's Baking Recipes](https://sallysbakingaddiction.com/)
+* Format:       LD-JSON
