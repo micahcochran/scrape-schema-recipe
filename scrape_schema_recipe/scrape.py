@@ -1,5 +1,5 @@
 #
-# Copyright 2019-2021 Micah Cochran
+# Copyright 2019-2023 Micah Cochran
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,10 +17,11 @@
 # internal libraries
 from dataclasses import dataclass
 import datetime
+import html
 from pathlib import Path
 import sys
 # for mypy
-from typing import Callable, Dict, IO, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, IO, List, Optional, Tuple, Union
 
 # external libraries
 import extruct
@@ -51,10 +52,13 @@ class SSRTypeError(TypeError):
         return s
 
 
-def scrape(location: Union[str, IO[str]],
-           python_objects: Union[bool, List, Tuple] = False,
-           nonstandard_attrs: bool = False, migrate_old_schema: bool = True,
-           user_agent_str: Optional[str] = None) -> List[Dict]:
+def scrape(
+    location: Union[str, IO[str]],
+    python_objects: Union[bool, List, Tuple] = False,
+    nonstandard_attrs: bool = False,
+    migrate_old_schema: bool = True,
+    user_agent_str: Optional[str] = None,
+) -> List[Dict[str, Any]]:
     """
     Parse data in https://schema.org/Recipe format into a list of dictionaries
     representing the recipe data.
@@ -133,16 +137,20 @@ def scrape(location: Union[str, IO[str]],
     if migrate_old_schema is True:
         scrapings = _migrate_old_schema(scrapings)
 
+    scrapings = [_unescape_content(s) for s in scrapings]
+
     if python_objects is not False:
         scrapings = _pythonize_objects(scrapings, python_objects)
 
     return scrapings
 
 
-def load(fp: Union[str, IO[str], Path],
-         python_objects: Union[bool, List, Tuple] = False,
-         nonstandard_attrs: bool = False,
-         migrate_old_schema: bool = True) -> List[Dict]:
+def load(
+    fp: Union[str, IO[str], Path],
+    python_objects: Union[bool, List, Tuple] = False,
+    nonstandard_attrs: bool = False,
+    migrate_old_schema: bool = True,
+) -> List[Dict[str, Any]]:
     """load a filename or file object to scrape
 
     Parameters
@@ -201,15 +209,20 @@ def load(fp: Union[str, IO[str], Path],
     if migrate_old_schema is True:
         scrapings = _migrate_old_schema(scrapings)
 
+    scrapings = [_unescape_content(s) for s in scrapings]
+
     if python_objects is not False:
         scrapings = _pythonize_objects(scrapings, python_objects)
 
     return scrapings
 
 
-def loads(string: str, python_objects: Union[bool, List, Tuple] = False,
-          nonstandard_attrs: bool = False,
-          migrate_old_schema: bool = True) -> List[Dict]:
+def loads(
+    string: str,
+    python_objects: Union[bool, List, Tuple] = False,
+    nonstandard_attrs: bool = False,
+    migrate_old_schema: bool = True,
+) -> List[Dict[str, Any]]:
     """scrapes a string
 
     Parameters
@@ -259,16 +272,21 @@ def loads(string: str, python_objects: Union[bool, List, Tuple] = False,
     if migrate_old_schema is True:
         scrapings = _migrate_old_schema(scrapings)
 
+    scrapings = [_unescape_content(s) for s in scrapings]
+
     if python_objects is not False:
         scrapings = _pythonize_objects(scrapings, python_objects)
 
     return scrapings
 
 
-def scrape_url(url: str, python_objects: Union[bool, List, Tuple] = False,
-               nonstandard_attrs: bool = False,
-               migrate_old_schema: bool = True,
-               user_agent_str: str = None) -> List[Dict]:
+def scrape_url(
+    url: str,
+    python_objects: Union[bool, List, Tuple] = False,
+    nonstandard_attrs: bool = False,
+    migrate_old_schema: bool = True,
+    user_agent_str: Optional[str] = None,
+) -> List[Dict[str, Any]]:
     """scrape from a URL
 
     Parameters
@@ -330,15 +348,17 @@ def scrape_url(url: str, python_objects: Union[bool, List, Tuple] = False,
     if migrate_old_schema is True:
         scrapings = _migrate_old_schema(scrapings)
 
+    scrapings = [_unescape_content(s) for s in scrapings]
+
     if python_objects is not False:
         scrapings = _pythonize_objects(scrapings, python_objects)
 
     return scrapings
 
 
-def _convert_json_ld_recipe(rec: Dict,
-                            nonstandard_attrs: bool = False,
-                            url: str = None) -> Dict:
+def _convert_json_ld_recipe(
+    rec: Dict[str, Any], nonstandard_attrs: bool = False, url: Optional[str] = None
+) -> Dict[str, Any]:
     """Helper function for _convert_to_scraping
     for a json-ld record adding extra tags"""
     # not sure if a copy is necessary?
@@ -354,9 +374,11 @@ def _convert_json_ld_recipe(rec: Dict,
     return d
 
 
-def _convert_to_scrapings(data: Dict[str, List[Dict]],
-                          nonstandard_attrs: bool = False,
-                          url: str = None) -> List[Dict]:
+def _convert_to_scrapings(
+    data: Dict[str, List[Dict]],
+    nonstandard_attrs: bool = False,
+    url: Optional[str] = None,
+) -> List[Dict]:
     """dectects schema.org/Recipe content in the dictionary and extracts it"""
     out = []
     if data['json-ld'] != []:
@@ -431,8 +453,9 @@ def _parse_determine_date_datetime(s: str) -> Union[datetime.datetime,
 
 
 # Test if lists/tuples have contain matching items
-def _have_matching_items(lst1: Union[bool, List, Tuple],
-                         lst2: Union[bool, List, Tuple]):
+def _have_matching_items(
+    lst1: Union[bool, List, Tuple], lst2: Union[bool, List, Tuple]
+) -> bool:
     if isinstance(lst1, bool):
         return lst1
 
@@ -443,8 +466,9 @@ def _have_matching_items(lst1: Union[bool, List, Tuple],
     return len(s) > 0
 
 
-def _pythonize_objects(scrapings: List[Dict], python_objects: Union[bool,
-                       List, Tuple]) -> List[Dict]:
+def _pythonize_objects(
+    scrapings: List[Dict[str, Any]], python_objects: Union[bool, List, Tuple]
+) -> List[Dict[str, Any]]:
 
     if python_objects is False:
         # this really should not be happening
@@ -464,8 +488,11 @@ def _pythonize_objects(scrapings: List[Dict], python_objects: Union[bool,
     return scrapings
 
 
-def _convert_properties_scrape(recipes: List[Dict], properties: frozenset,
-                               function: Callable[[str], Union[datetime.datetime, datetime.date]]) -> List[Dict]:
+def _convert_properties_scrape(
+    recipes: List[Dict[str, Any]],
+    properties: frozenset,
+    function: Callable[[str], Union[datetime.datetime, datetime.date]],
+) -> List[Dict[str, Any]]:
     for i in range(len(recipes)):
         key_set = set(recipes[i].keys())
         for p in key_set.intersection(properties):
@@ -479,7 +506,7 @@ def _convert_properties_scrape(recipes: List[Dict], properties: frozenset,
     return recipes
 
 
-def _migrate_old_schema(recipes: List[Dict]) -> List[Dict]:
+def _migrate_old_schema(recipes: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Migrate old schema.org/Recipe version to current schema version."""
     for i in range(len(recipes)):
         # rename 'ingredients' to 'recipeIngredient'
@@ -487,3 +514,39 @@ def _migrate_old_schema(recipes: List[Dict]) -> List[Dict]:
             recipes[i]['recipeIngredient'] = recipes[i].pop('ingredients')
 
     return recipes
+
+
+def _unescape_content(recipe: Dict[str, Any]) -> Dict[str, Any]:
+    """Replace escape codes in HTML to the actual character from text content"""
+
+    new_rec: Dict[str, Any] = {}
+
+    def html_unescape_string(v: Any) -> Any:
+        if isinstance(v, str):
+            return html.unescape(v)
+        return v
+
+    # this loops through most of the content an runs the html.unescape function on values
+    for key, value in recipe.items():
+        if isinstance(value, str):
+            new_rec[key] = html.unescape(value)
+        elif isinstance(value, dict):
+            new_rec[key] = {k: html_unescape_string(v) for k, v in value.items() if v}
+        elif isinstance(value, list):
+
+            # value is empty, skip the key
+            if value == [] or value is None or value == "":
+                pass
+            # a list of dictionaries
+            elif len(value) > 0 and isinstance(value[0], dict):
+                new_rec[key] = [
+                    {k: html.unescape(v) for k, v in d_row.items() if v}
+                    for d_row in value
+                ]
+
+            elif len(value) > 0 and isinstance(value[0], str):
+                new_rec[key] = [html.unescape(item) for item in value]
+            else:
+                raise TypeError(f"on value {value}")
+        
+    return new_rec

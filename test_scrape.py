@@ -95,7 +95,6 @@ class TestUnsetTimeDate(unittest.TestCase):
             "nutrition",
             "prepTime",
             "recipeCategory",
-            "recipeCuisine",
             "recipeIngredient",
             "recipeInstructions",
             "recipeYield",
@@ -435,6 +434,28 @@ class TestGraph(unittest.TestCase):
         # 2019 has a datePublished, 2018 version does not
         r_graph["datePublished"] == datetime.date(2018, 3, 19)
         assert "datePublished" not in r_old.keys()
+
+
+class TestEscaping(unittest.TestCase):
+    # make sure that the name contains & versus &amp; fixed in version 0.2.1
+    def test_unescape_name_description(self):
+        s = f"{DATA_PATH}/histfriendly-carrot-fennel-soup.html"
+        recipes = load(s)
+        recipe = recipes[0]
+
+        assert "&amp;" not in recipe["name"]
+        assert "&" in recipe["name"]
+        assert "&amp;" not in recipe["description"]
+        assert "&" in recipe["description"]
+
+    # make sure that the name contains & versus &amp; fixed in version 0.2.1
+    def test_unescape_ingredients(self):
+        s = f"{DATA_PATH}/sally-coconut-cake.html"
+        recipes = load(s)
+        recipe = recipes[0]
+
+        assert "&amp;" not in recipe["recipeIngredient"][0]
+        assert "&" in recipe["recipeIngredient"][0]
 
 
 if __name__ == "__main__":
