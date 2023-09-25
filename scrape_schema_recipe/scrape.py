@@ -379,11 +379,12 @@ def _convert_to_scrapings(
     nonstandard_attrs: bool = False,
     url: Optional[str] = None,
 ) -> List[Dict]:
-    """dectects schema.org/Recipe content in the dictionary and extracts it"""
+    """detects schema.org/Recipe content in the dictionary and extracts the content"""
     out = []
     if data['json-ld'] != []:
         for rec in data['json-ld']:
-            if rec.get('@type') == 'Recipe':
+            # checks if '@type' is not None and 'Recipe' is contained in a list or 'Recipe' == 'Recipe' 
+            if rec.get("@type") and "Recipe" in rec.get("@type"):  # type: ignore
                 d = _convert_json_ld_recipe(rec, nonstandard_attrs, url)
                 out.append(d)
 
