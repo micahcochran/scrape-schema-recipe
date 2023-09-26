@@ -1,14 +1,13 @@
 # Test Data Attribution/Licenses
 
-Attribution for the test data (in the `scrape_schema_recipe/test_data/` folder) included in this python package.
+Attribution for the test data included in this python package (located in the [`scrape_schema_recipe/test_data/`](scrape_schema_recipe/test_data/) folder). 
 These are input for testing the software package.
 
-I've tried to use recipes under Creative Commons Licenses that do not restrict derivation because
-a unit test case could be considered a derivation.
-I've sparingly using recipes that are licensed non-commercial.  I think unit testing
-could constitute as a use that would not conflict with that.
+I've tried to use recipes under Creative Commons Licenses that do not restrict a derivative work because
+in the strictest sense a unit test case could be considered a derivative work.
+However, I think that using a recipe for testing software constitutes fair use.
 
-These recipes and their HTML remain are licensed under their respective license, 
+These recipes and their HTML remain are licensed under their respective licenses, 
 NOT the Apache 2.0 license that the software is licensed (except where noted).
 
 
@@ -16,7 +15,7 @@ NOT the Apache 2.0 license that the software is licensed (except where noted).
 
 
 ### Irish Coffee Recipe
-* File:       bevvy-irish-coffee.html
+* File:       bevvy-irish-coffee-2018.html / bevvy-irish-coffee-2019.html 
 * Author:     Bevvy
 * Recipe URL: https://bevvy.co/cocktail/irish-coffee/smq
 * License:    [Creative Commons Attribution-ShareAlike 3.0 License](https://creativecommons.org/licenses/by-sa/3.0/)
@@ -43,7 +42,7 @@ NOT the Apache 2.0 license that the software is licensed (except where noted).
 
 
 ### Meyer Lemon Poppyseed Tea Cakes
-* File:		crumb-meyer-lemon-poppyseed-tea-cakes.html
+* File:		[crumb-lemon-tea-cakes-2018.html](scrape_schema_recipe/test_data/crumb-lemon-tea-cakes-2018.html) / [crumb-lemon-tea-cakes-2019.html](scrape_schema_recipe/test_data/crumb-lemon-tea-cakes-2019.html)
 * Author:	[Isabell Boucher](http://www.crumbblog.com/about-isabelle/)
 * Recipe URL:	http://www.crumbblog.com/meyer-lemon-poppyseed-tea-cakes/
 * License:	[Creative Commons Attribution-NonCommercial-ShareAlike 2.5 Canada License](http://creativecommons.org/licenses/by-nc-sa/2.5/ca/)
@@ -84,10 +83,10 @@ from http://www.crumbblog.com/about-the-recipes/
 * Format:       LD-JSON
 
 ## Unit Tests
-
+These recipes are included only for unit tests and are under proprietary licenses.
 
 ### Simple Moscow Mule
-* File:	      allrecipes-moscow-mule.html
+* File:	      [allrecipes-moscow-mule-2021.html](scrape_schema_recipe/test_data/allrecipes-moscow-mule-2021.html) / [allrecipes-moscow-mule-2023.html](scrape_schema_recipe/test_data/allrecipes-moscow-mule-2023.html)
 * Author:     [Lorem Ipsum](https://www.allrecipes.com/cook/loremipsum/)
 * Recipe URL: https://www.allrecipes.com/recipe/237874/simple-moscow-mule/
 * License:    Proprietary

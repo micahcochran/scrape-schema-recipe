@@ -75,7 +75,7 @@ class TestUnsetTimeDate(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.recipes = scrape(
-            f"{DATA_PATH}/allrecipes-moscow-mule.html", python_objects=True
+            f"{DATA_PATH}/allrecipes-moscow-mule-2021.html", python_objects=True
         )
         cls.recipe = cls.recipes[0]
 
@@ -456,6 +456,21 @@ class TestEscaping(unittest.TestCase):
 
         assert "&amp;" not in recipe["recipeIngredient"][0]
         assert "&" in recipe["recipeIngredient"][0]
+
+
+class TestTypeList(unittest.TestCase):
+    """Test that @type can be a list."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.recipes = scrape(
+            f"{DATA_PATH}/allrecipes-moscow-mule-2021.html", python_objects=True
+        )
+        cls.recipe = cls.recipes[0]
+
+    def test_list_type(self):
+        assert "Recipe" in self.recipe["@type"]
+        assert self.recipe["name"] == "Simple Moscow Mule"
 
 
 if __name__ == "__main__":
