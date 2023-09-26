@@ -83,7 +83,7 @@ from http://www.crumbblog.com/about-the-recipes/
 * Format:       LD-JSON
 
 ## Unit Tests
-
+These recipes are included only for unit tests and are under proprietary licenses.
 
 ### Simple Moscow Mule
 * File:	      [allrecipes-moscow-mule-2021.html](scrape_schema_recipe/test_data/allrecipes-moscow-mule-2021.html) / [allrecipes-moscow-mule-2023.html](scrape_schema_recipe/test_data/allrecipes-moscow-mule-2023.html)
