@@ -58,6 +58,7 @@ def scrape(
     nonstandard_attrs: bool = False,
     migrate_old_schema: bool = True,
     user_agent_str: Optional[str] = None,
+    allowed_formats: Optional[List[str]]=["microdata","json-ld"],
 ) -> List[Dict[str, Any]]:
     """
     Parse data in https://schema.org/Recipe format into a list of dictionaries
@@ -95,6 +96,10 @@ def scrape(
         overide the user_agent_string with this value.
         (defaults to None)
 
+    allowed_formats : list, optional
+        specifies which formats to use. Options are: microdata, json-ld, rdfa, opengraph, microformat
+        (defaults to ["microdata","json-ld"])
+
     Returns
     -------
     list
@@ -114,19 +119,19 @@ def scrape(
         if location.startswith(("http://", "https://")):
             return scrape_url(location, python_objects=python_objects,
                               nonstandard_attrs=nonstandard_attrs,
-                              user_agent_str=user_agent_str)
+                              user_agent_str=user_agent_str,allowed_formats=allowed_formats)
 
         # Is this is is a very long string? Perhaps it has HTML content.
         elif len(location) > 255:
-            data = extruct.extract(location)
+            data = extruct.extract(location,syntaxes=allowed_formats)
 
         # Maybe it is a filename?
         else:
             with open(location) as f:
-                data = extruct.extract(f.read())
+                data = extruct.extract(f.read(),syntaxes=allowed_formats)
     elif hasattr(location, 'read'):
         # Assume this is some kind of file-like object that can be read.
-        data = extruct.extract(location.read())
+        data = extruct.extract(location.read(),syntaxes=allowed_formats)
     else:
         raise SSRTypeError(var_name="location", 
                            object_type=type(location), 
@@ -150,6 +155,7 @@ def load(
     python_objects: Union[bool, List, Tuple] = False,
     nonstandard_attrs: bool = False,
     migrate_old_schema: bool = True,
+    allowed_formats: Optional[List[str]]=["microdata","json-ld"],
 ) -> List[Dict[str, Any]]:
     """load a filename or file object to scrape
 
@@ -180,6 +186,10 @@ def load(
     migrate_old_schema : bool, optional
         when True it migrates the schema from older version to current version
         (defaults to True)
+    
+    allowed_formats : list, optional
+        specifies which formats to use. Options are: microdata, json-ld, rdfa, opengraph, microformat
+        (defaults to ["microdata","json-ld"])
 
     Returns
     -------
@@ -193,12 +203,12 @@ def load(
 
     if isinstance(fp, str):
         with open(fp) as f:
-            data = extruct.extract(f.read())
+            data = extruct.extract(f.read(),syntaxes=allowed_formats)
     elif isinstance(fp, Path):
-        data = extruct.extract(fp.read_text())
+        data = extruct.extract(fp.read_text(),syntaxes=allowed_formats)
     elif hasattr(fp, 'read'):
         # Assume this is some kind of file-like object that can be read.
-        data = extruct.extract(fp.read())
+        data = extruct.extract(fp.read(),syntaxes=allowed_formats)
     else:
         raise SSRTypeError(var_name="fp", 
                            object_type=type(fp), 
@@ -222,6 +232,7 @@ def loads(
     python_objects: Union[bool, List, Tuple] = False,
     nonstandard_attrs: bool = False,
     migrate_old_schema: bool = True,
+    allowed_formats: Optional[List[str]]=["microdata","json-ld"],
 ) -> List[Dict[str, Any]]:
     """scrapes a string
 
@@ -252,6 +263,10 @@ def loads(
     migrate_old_schema : bool, optional
         when True it migrates the schema from older version to current version
         (defaults to True)
+    
+    allowed_formats : list, optional
+        specifies which formats to use. Options are: microdata, json-ld, rdfa, opengraph, microformat
+        (defaults to ["microdata","json-ld"])
 
     Returns
     -------
@@ -266,7 +281,7 @@ def loads(
 
 
     data = {}  # type: Dict[str, List[Dict]]
-    data = extruct.extract(string)
+    data = extruct.extract(string,syntaxes=allowed_formats)
     scrapings = _convert_to_scrapings(data, nonstandard_attrs)
 
     if migrate_old_schema is True:
@@ -286,6 +301,7 @@ def scrape_url(
     nonstandard_attrs: bool = False,
     migrate_old_schema: bool = True,
     user_agent_str: Optional[str] = None,
+    allowed_formats: Optional[List[str]]=["microdata","json-ld"],
 ) -> List[Dict[str, Any]]:
     """scrape from a URL
 
@@ -320,6 +336,10 @@ def scrape_url(
     user_agent_str : string, optional
         overide the user_agent_string with this value.
         (defaults to None)
+    
+    allowed_formats : list, optional
+        specifies which formats to use. Options are: microdata, json-ld, rdfa, opengraph, microformat
+        (defaults to ["microdata","json-ld"])
 
     Returns
     -------
@@ -340,7 +360,7 @@ def scrape_url(
 
     r = requests.get(url, headers={"User-Agent": user_agent_str}, timeout=5)
     r.raise_for_status()
-    data = extruct.extract(r.text, r.url)
+    data = extruct.extract(r.text, r.url,syntaxes=allowed_formats)
     url = r.url
 
     scrapings = _convert_to_scrapings(data, nonstandard_attrs, url=url)
